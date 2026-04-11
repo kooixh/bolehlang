@@ -399,15 +399,15 @@ func TestParseComparisonOperators(t *testing.T) {
 }
 
 func TestParseLogicalOperators(t *testing.T) {
-	prog := parse(t, `dei x = can dan cannot atau can;`)
+	prog := parse(t, `dei x = can also cannot if not can;`)
 	decl := prog.Body[0].(*parser.VarDeclaration)
-	// "atau" has lower precedence than "dan"
+	// "if not" has lower precedence than "also"
 	or, ok := decl.Value.(*parser.BinaryExpr)
 	if !ok {
 		t.Fatalf("expected BinaryExpr, got %T", decl.Value)
 	}
-	if or.Operator != "atau" {
-		t.Errorf("expected 'atau' at top, got '%s'", or.Operator)
+	if or.Operator != "if not" {
+		t.Errorf("expected 'if not' at top, got '%s'", or.Operator)
 	}
 }
 

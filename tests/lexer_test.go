@@ -86,8 +86,8 @@ func TestTokenizeKeywords(t *testing.T) {
 		{"nah", lexer.TOKEN_NAH},
 		{"sama", lexer.TOKEN_SAMA},
 		{"tak sama", lexer.TOKEN_TAK_SAMA},
-		{"dan", lexer.TOKEN_DAN},
-		{"atau", lexer.TOKEN_ATAU},
+		{"also", lexer.TOKEN_ALSO},
+		{"if not", lexer.TOKEN_IF_NOT},
 		{"try see", lexer.TOKEN_TRY_SEE},
 		{"alamak", lexer.TOKEN_ALAMAK},
 		{"confirm need", lexer.TOKEN_CONFIRM_NEED},
@@ -217,19 +217,19 @@ func TestTokenizeUnexpectedCharacter(t *testing.T) {
 }
 
 func TestTokenizeComplexExpression(t *testing.T) {
-	tokens := tokenize(t, "is it (x > 0 dan y < 10) { eh x; }")
+	tokens := tokenize(t, "is it (x > 0 also y < 10) { eh x; }")
 	// Should parse without error and contain the expected keyword tokens
 	hasIsIt := false
-	hasDan := false
+	hasAlso := false
 	for _, tok := range tokens {
 		if tok.Type == lexer.TOKEN_IS_IT {
 			hasIsIt = true
 		}
-		if tok.Type == lexer.TOKEN_DAN {
-			hasDan = true
+		if tok.Type == lexer.TOKEN_ALSO {
+			hasAlso = true
 		}
 	}
-	if !hasIsIt || !hasDan {
-		t.Error("expected IS_IT and DAN tokens in complex expression")
+	if !hasIsIt || !hasAlso {
+		t.Error("expected IS_IT and ALSO tokens in complex expression")
 	}
 }

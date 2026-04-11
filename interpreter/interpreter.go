@@ -514,12 +514,12 @@ func (interp *Interpreter) evalBinary(n *parser.BinaryExpr, env *Environment) (i
 
 	// Short-circuit for logical operators
 	switch n.Operator {
-	case "atau":
+	case "if not":
 		if isTruthy(left) {
 			return left, nil
 		}
 		return interp.evalExpr(n.Right, env)
-	case "dan":
+	case "also":
 		if !isTruthy(left) {
 			return left, nil
 		}

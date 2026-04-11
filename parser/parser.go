@@ -522,13 +522,13 @@ func (p *Parser) parseOr() (Node, error) {
 		return nil, err
 	}
 
-	for p.check(lexer.TOKEN_ATAU) {
+	for p.check(lexer.TOKEN_IF_NOT) {
 		p.advance()
 		right, err := p.parseAnd()
 		if err != nil {
 			return nil, err
 		}
-		left = &BinaryExpr{Left: left, Operator: "atau", Right: right}
+		left = &BinaryExpr{Left: left, Operator: "if not", Right: right}
 	}
 
 	return left, nil
@@ -540,13 +540,13 @@ func (p *Parser) parseAnd() (Node, error) {
 		return nil, err
 	}
 
-	for p.check(lexer.TOKEN_DAN) {
+	for p.check(lexer.TOKEN_ALSO) {
 		p.advance()
 		right, err := p.parseEquality()
 		if err != nil {
 			return nil, err
 		}
-		left = &BinaryExpr{Left: left, Operator: "dan", Right: right}
+		left = &BinaryExpr{Left: left, Operator: "also", Right: right}
 	}
 
 	return left, nil

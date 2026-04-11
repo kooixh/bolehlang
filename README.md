@@ -140,8 +140,8 @@ Aiyo, a memang variable 'PI' cannot be redefined
 #### Logical
 | Operator | Description |
 |----------|-------------|
-| `dan` | Logical AND |
-| `atau` | Logical OR |
+| `also` | Logical AND |
+| `if not` | Logical OR |
 | `!` | Logical NOT |
 
 ### Print
@@ -430,8 +430,8 @@ A complete mapping of bolehlang keywords to their conventional equivalents:
 | `kosong` | `null` | Null value ("empty") |
 | `sama` | `==` | Equal |
 | `tak sama` | `!=` | Not equal |
-| `dan` | `&&` | Logical AND |
-| `atau` | `\|\|` | Logical OR |
+| `also` | `&&` | Logical AND |
+| `if not` | `\|\|` | Logical OR |
 | `try see` | `try` | Try block |
 | `alamak` | `catch` | Catch block ("oh no!") |
 | `confirm need` | `finally` | Finally block |

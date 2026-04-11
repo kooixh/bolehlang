@@ -43,8 +43,8 @@ const (
 	// Comparison keywords
 	TOKEN_SAMA
 	TOKEN_TAK_SAMA
-	TOKEN_DAN
-	TOKEN_ATAU
+	TOKEN_ALSO
+	TOKEN_IF_NOT
 
 	// Error handling
 	TOKEN_TRY_SEE
@@ -121,7 +121,7 @@ var keywords = []struct {
 	{"can", TOKEN_CAN},
 	{"one by one", TOKEN_ONE_BY_ONE},
 	{"sama", TOKEN_SAMA},
-	{"atau", TOKEN_ATAU},
-	{"dan", TOKEN_DAN},
+	{"if not", TOKEN_IF_NOT},
+	{"also", TOKEN_ALSO},
 	{"dei", TOKEN_DEI},
 }

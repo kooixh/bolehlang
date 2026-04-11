@@ -150,11 +150,11 @@
         },
         {
           "name": "keyword.operator.logical.boleh",
-          "match": "\\bdan\\b"
+          "match": "\\balso\\b"
         },
         {
           "name": "keyword.operator.logical.boleh",
-          "match": "\\batau\\b"
+          "match": "\\bif not\\b"
         },
         {
           "name": "keyword.control.trycatch.boleh",

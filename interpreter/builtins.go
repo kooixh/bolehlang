@@ -40,6 +40,8 @@ func registerBuiltins(env *Environment) {
 				return "senarai", nil
 			case *Function, *BuiltinFunc:
 				return "kerja", nil
+			case *Exception:
+				return args[0].(*Exception).Type, nil
 			case nil:
 				return "kosong", nil
 			default:
@@ -153,4 +155,19 @@ func registerBuiltins(env *Environment) {
 			return stringify(args[0]), nil
 		},
 	}, false)
+
+	// Exception constructors
+	for _, exType := range []string{ExMakKauHijau, ExBoJio, ExApaNi, ExKantoi} {
+		exType := exType // capture loop variable
+		env.Set(exType, &BuiltinFunc{
+			Name: exType,
+			Fn: func(args []interface{}) (interface{}, error) {
+				msg := ""
+				if len(args) >= 1 {
+					msg = stringify(args[0])
+				}
+				return &Exception{Type: exType, Message: msg}, nil
+			},
+		}, false)
+	}
 }

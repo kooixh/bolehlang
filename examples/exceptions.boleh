@@ -1,0 +1,62 @@
+// eh: Exception types demo
+
+// eh: Throwing typed exceptions manually
+eh "=== Manual Exception Throwing ===";
+
+try see {
+    dei err = KantoiException("something went wrong lah!");
+    mampus err;
+} alamak (e) {
+    eh e;
+}
+
+try see {
+    dei err = MakKauHijauException("you tried to use kosong!");
+    mampus err;
+} alamak (e) {
+    eh e;
+}
+
+try see {
+    dei err = ApaNiException("wrong type bro");
+    mampus err;
+} alamak (e) {
+    eh e;
+}
+
+try see {
+    dei err = BoJioException("file missing lah");
+    mampus err;
+} alamak (e) {
+    eh e;
+}
+
+// eh: Auto-thrown exceptions
+eh "";
+eh "=== Auto-thrown Exceptions ===";
+
+// eh: MakKauHijauException - null pointer
+try see {
+    dei x = kosong;
+    eh x.panjang;
+} alamak (e) {
+    eh "Caught: " + e;
+}
+
+// eh: ApaNiException - invalid type
+try see {
+    dei x = 42;
+    eh x.panjang;
+} alamak (e) {
+    eh "Caught: " + e;
+}
+
+// eh: KantoiException - runtime error (division by zero)
+try see {
+    dei x = 10 / 0;
+} alamak (e) {
+    eh "Caught: " + e;
+}
+
+eh "";
+eh "All exception demos done!";

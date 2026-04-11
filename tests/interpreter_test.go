@@ -602,14 +602,14 @@ func TestFinallyAlwaysRuns(t *testing.T) {
 }
 
 func TestUncaughtThrow(t *testing.T) {
-	// An uncaught throw should cause a panic that propagates
-	defer func() {
-		r := recover()
-		if r == nil {
-			t.Fatal("expected panic from uncaught throw")
-		}
-	}()
-	runSource(`mampus "uncaught!";`)
+	// An uncaught throw should return an error
+	err := runSource(`mampus "uncaught!";`)
+	if err == nil {
+		t.Fatal("expected error from uncaught throw")
+	}
+	if !strings.Contains(err.Error(), "uncaught") {
+		t.Errorf("expected uncaught exception error, got %q", err)
+	}
 }
 
 // --- Warn statement ---

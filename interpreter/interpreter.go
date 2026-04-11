@@ -25,7 +25,20 @@ func New(filePath string) *Interpreter {
 	return &Interpreter{global: global, filePath: absPath, imported: imported}
 }
 
-func (interp *Interpreter) Run(program *parser.Program) error {
+func (interp *Interpreter) Run(program *parser.Program) (retErr error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if ts, ok := r.(throwSignal); ok {
+				if exc, ok := ts.Value.(*Exception); ok {
+					retErr = fmt.Errorf("%s: %s", exc.Type, exc.Message)
+				} else {
+					retErr = fmt.Errorf("uncaught exception: %v", ts.Value)
+				}
+			} else {
+				panic(r)
+			}
+		}
+	}()
 	env := interp.global
 	for _, stmt := range program.Body {
 		if err := interp.execStatement(stmt, env); err != nil {
@@ -53,7 +66,10 @@ func (interp *Interpreter) execImport(n *parser.ImportStatement, env *Environmen
 	// Read the file
 	source, err := os.ReadFile(absPath)
 	if err != nil {
-		return fmt.Errorf("line %d: cannot tapau '%s' — %s", n.Line, n.Path, err)
+		panic(throwSignal{Value: &Exception{
+			Type:    ExBoJio,
+			Message: fmt.Sprintf("cannot tapau '%s' — file not found lah!", n.Path),
+		}})
 	}
 
 	// Lex
@@ -224,7 +240,10 @@ func (interp *Interpreter) execStatement(node parser.Node, env *Environment) err
 		}
 		arr, ok := collection.([]interface{})
 		if !ok {
-			return fmt.Errorf("line %d: setiap loop needs a senarai (array), got %T", n.Line, collection)
+			panic(throwSignal{Value: &Exception{
+				Type:    ExApaNi,
+				Message: fmt.Sprintf("setiap loop needs a senarai (array), got %T — check your types lah", collection),
+			}})
 		}
 		for _, item := range arr {
 			loopEnv := NewEnvironment(env)
@@ -358,7 +377,10 @@ func (interp *Interpreter) evalExpr(node parser.Node, env *Environment) (interfa
 	case *parser.Identifier:
 		val, ok := env.Get(n.Name)
 		if !ok {
-			return nil, fmt.Errorf("'%s' tu apa? Variable not found lah", n.Name)
+			panic(throwSignal{Value: &Exception{
+				Type:    ExKantoi,
+				Message: fmt.Sprintf("'%s' tu apa? Variable not found lah", n.Name),
+			}})
 		}
 		return val, nil
 
@@ -400,6 +422,12 @@ func (interp *Interpreter) evalExpr(node parser.Node, env *Environment) (interfa
 		if err != nil {
 			return nil, err
 		}
+		if obj == nil {
+			panic(throwSignal{Value: &Exception{
+				Type:    ExMakKauHijau,
+				Message: "cannot index into kosong — it's null lah!",
+			}})
+		}
 		index, err := interp.evalExpr(n.Index, env)
 		if err != nil {
 			return nil, err
@@ -408,17 +436,26 @@ func (interp *Interpreter) evalExpr(node parser.Node, env *Environment) (interfa
 		case []interface{}:
 			i := int(toNumber(index))
 			if i < 0 || i >= len(o) {
-				return nil, fmt.Errorf("index %d out of range — senarai cuma ada %d items je", i, len(o))
+				panic(throwSignal{Value: &Exception{
+					Type:    ExKantoi,
+					Message: fmt.Sprintf("index %d out of range — senarai cuma ada %d items je", i, len(o)),
+				}})
 			}
 			return o[i], nil
 		case string:
 			i := int(toNumber(index))
 			if i < 0 || i >= len(o) {
-				return nil, fmt.Errorf("index %d out of range — ayat cuma ada %d characters je", i, len(o))
+				panic(throwSignal{Value: &Exception{
+					Type:    ExKantoi,
+					Message: fmt.Sprintf("index %d out of range — ayat cuma ada %d characters je", i, len(o)),
+				}})
 			}
 			return string(o[i]), nil
 		default:
-			return nil, fmt.Errorf("cannot index into %T", obj)
+			panic(throwSignal{Value: &Exception{
+				Type:    ExApaNi,
+				Message: fmt.Sprintf("cannot index into %T — that's not an array or string lah", obj),
+			}})
 		}
 
 	case *parser.MemberExpr:
@@ -426,19 +463,34 @@ func (interp *Interpreter) evalExpr(node parser.Node, env *Environment) (interfa
 		if err != nil {
 			return nil, err
 		}
+		if obj == nil {
+			panic(throwSignal{Value: &Exception{
+				Type:    ExMakKauHijau,
+				Message: fmt.Sprintf("cannot access property '%s' on kosong — it's null lah!", n.Property),
+			}})
+		}
 		switch o := obj.(type) {
 		case []interface{}:
 			if n.Property == "panjang" {
 				return float64(len(o)), nil
 			}
-			return nil, fmt.Errorf("senarai tak ada property '%s'", n.Property)
+			panic(throwSignal{Value: &Exception{
+				Type:    ExApaNi,
+				Message: fmt.Sprintf("senarai tak ada property '%s'", n.Property),
+			}})
 		case string:
 			if n.Property == "panjang" {
 				return float64(len(o)), nil
 			}
-			return nil, fmt.Errorf("ayat tak ada property '%s'", n.Property)
+			panic(throwSignal{Value: &Exception{
+				Type:    ExApaNi,
+				Message: fmt.Sprintf("ayat tak ada property '%s'", n.Property),
+			}})
 		default:
-			return nil, fmt.Errorf("cannot access property '%s' on %T", n.Property, obj)
+			panic(throwSignal{Value: &Exception{
+				Type:    ExApaNi,
+				Message: fmt.Sprintf("cannot access property '%s' on %T", n.Property, obj),
+			}})
 		}
 
 	case *parser.AnonFunction:
@@ -489,13 +541,19 @@ func (interp *Interpreter) evalBinary(n *parser.BinaryExpr, env *Environment) (i
 	case "/":
 		r := toNumber(right)
 		if r == 0 {
-			return nil, fmt.Errorf("cannot divide by zero — maths pun tak reti ke")
+			panic(throwSignal{Value: &Exception{
+				Type:    ExKantoi,
+				Message: "cannot divide by zero — maths pun tak reti ke",
+			}})
 		}
 		return toNumber(left) / r, nil
 	case "%":
 		r := toNumber(right)
 		if r == 0 {
-			return nil, fmt.Errorf("cannot modulo by zero")
+			panic(throwSignal{Value: &Exception{
+				Type:    ExKantoi,
+				Message: "cannot modulo by zero",
+			}})
 		}
 		return float64(int(toNumber(left)) % int(r)), nil
 	case "sama":
@@ -533,8 +591,10 @@ func (interp *Interpreter) evalCall(n *parser.CallExpr, env *Environment) (resul
 	switch fn := callee.(type) {
 	case *Function:
 		if len(args) != len(fn.Params) {
-			return nil, fmt.Errorf("function '%s' expects %d args, got %d — check betul betul lah",
-				fn.Name, len(fn.Params), len(args))
+			panic(throwSignal{Value: &Exception{
+				Type:    ExApaNi,
+				Message: fmt.Sprintf("function '%s' expects %d args, got %d — check betul betul lah", fn.Name, len(fn.Params), len(args)),
+			}})
 		}
 		fnEnv := NewEnvironment(fn.Closure)
 		for i, param := range fn.Params {
@@ -563,7 +623,10 @@ func (interp *Interpreter) evalCall(n *parser.CallExpr, env *Environment) (resul
 		return fn.Fn(args)
 
 	default:
-		return nil, fmt.Errorf("'%v' is not a function — tak boleh panggil lah", callee)
+		panic(throwSignal{Value: &Exception{
+			Type:    ExApaNi,
+			Message: fmt.Sprintf("'%v' is not a function — tak boleh panggil lah", callee),
+		}})
 	}
 }
 
@@ -666,6 +729,8 @@ func stringify(val interface{}) string {
 		return fmt.Sprintf("<kerja %s>", v.Name)
 	case *BuiltinFunc:
 		return fmt.Sprintf("<builtin %s>", v.Name)
+	case *Exception:
+		return fmt.Sprintf("%s: %s", v.Type, v.Message)
 	default:
 		return fmt.Sprintf("%v", v)
 	}

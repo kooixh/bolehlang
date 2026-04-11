@@ -39,6 +39,6 @@ Syntax highlighting for the [bolehlang](https://github.com/kooixh/bolehlang) pro
 | Print | `eh`, `walao eh` |
 | Imports | `tapau` |
 | Loop keywords | `sampai`, `dalam`, `gaodim`, `no need` |
-| Logical & comparison | `sama`, `tak sama`, `dan`, `atau` |
+| Logical & comparison | `sama`, `tak sama`, `also`, `if not` |
 | Built-in functions | `panjang`, `jenis`, `masuk`, `potong`, `nombor`, `ayat`, `cincai` |
 | Comments | `// eh: ...`, `alamak mula ... alamak habis` |

@@ -241,10 +241,10 @@ func TestLogicalOperators(t *testing.T) {
 		source   string
 		expected string
 	}{
-		{`eh can dan can;`, "can"},
-		{`eh can dan cannot;`, "cannot"},
-		{`eh cannot atau can;`, "can"},
-		{`eh cannot atau cannot;`, "cannot"},
+		{`eh can also can;`, "can"},
+		{`eh can also cannot;`, "cannot"},
+		{`eh cannot if not can;`, "can"},
+		{`eh cannot if not cannot;`, "cannot"},
 		{`eh !can;`, "cannot"},
 		{`eh !cannot;`, "can"},
 	}
@@ -883,9 +883,9 @@ func TestBlockComment(t *testing.T) {
 // --- Short-circuit evaluation ---
 
 func TestShortCircuitDan(t *testing.T) {
-	// "dan" should not evaluate right side if left is falsy
+	// "also" should not evaluate right side if left is falsy
 	out := captureOutput(t, `
-		dei x = cannot dan can;
+		dei x = cannot also can;
 		eh x;
 	`)
 	if strings.TrimSpace(out) != "cannot" {
@@ -894,9 +894,9 @@ func TestShortCircuitDan(t *testing.T) {
 }
 
 func TestShortCircuitAtau(t *testing.T) {
-	// "atau" should not evaluate right side if left is truthy
+	// "if not" should not evaluate right side if left is truthy
 	out := captureOutput(t, `
-		dei x = can atau cannot;
+		dei x = can if not cannot;
 		eh x;
 	`)
 	if strings.TrimSpace(out) != "can" {

@@ -4,88 +4,11 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
+
 	"github.com/kooixh/bolehlang/lexer"
 	"github.com/kooixh/bolehlang/parser"
-	"strings"
 )
-
-// Control flow signals (using panics caught at boundaries)
-
-type returnSignal struct {
-	Value interface{}
-}
-
-type breakSignal struct{}
-
-type continueSignal struct{}
-
-type throwSignal struct {
-	Value interface{}
-}
-
-// Environment (lexical scoping)
-
-type Environment struct {
-	vars      map[string]interface{}
-	constants map[string]bool
-	parent    *Environment
-}
-
-func NewEnvironment(parent *Environment) *Environment {
-	return &Environment{
-		vars:      make(map[string]interface{}),
-		constants: make(map[string]bool),
-		parent:    parent,
-	}
-}
-
-func (e *Environment) Set(name string, value interface{}, isConst bool) {
-	e.vars[name] = value
-	if isConst {
-		e.constants[name] = true
-	}
-}
-
-func (e *Environment) Get(name string) (interface{}, bool) {
-	if val, ok := e.vars[name]; ok {
-		return val, true
-	}
-	if e.parent != nil {
-		return e.parent.Get(name)
-	}
-	return nil, false
-}
-
-func (e *Environment) Assign(name string, value interface{}) error {
-	if _, ok := e.vars[name]; ok {
-		if e.constants[name] {
-			return fmt.Errorf("Aiyo, a memang variable '%s' cannot be redefined", name)
-		}
-		e.vars[name] = value
-		return nil
-	}
-	if e.parent != nil {
-		return e.parent.Assign(name, value)
-	}
-	return fmt.Errorf("variable '%s' not found — you got declare or not?", name)
-}
-
-// Function value
-
-type Function struct {
-	Name    string
-	Params  []string
-	Body    []parser.Node
-	Closure *Environment
-}
-
-// Built-in function
-type BuiltinFunc struct {
-	Name string
-	Fn   func(args []interface{}) (interface{}, error)
-}
-
-// Interpreter
 
 type Interpreter struct {
 	global   *Environment

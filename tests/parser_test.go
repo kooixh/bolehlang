@@ -1,19 +1,20 @@
-package parser
+package tests
 
 import (
 	"testing"
 
 	"github.com/kooixh/bolehlang/lexer"
+	"github.com/kooixh/bolehlang/parser"
 )
 
-func parse(t *testing.T, source string) *Program {
+func parse(t *testing.T, source string) *parser.Program {
 	t.Helper()
 	lex := lexer.New(source)
 	tokens, err := lex.Tokenize()
 	if err != nil {
 		t.Fatalf("lexer error: %s", err)
 	}
-	p := New(tokens)
+	p := parser.New(tokens)
 	program, err := p.Parse()
 	if err != nil {
 		t.Fatalf("parser error: %s", err)
@@ -28,7 +29,7 @@ func parseFail(t *testing.T, source string) {
 	if err != nil {
 		return // lexer error is also acceptable
 	}
-	p := New(tokens)
+	p := parser.New(tokens)
 	_, err = p.Parse()
 	if err == nil {
 		t.Fatal("expected parse error")
@@ -40,14 +41,14 @@ func TestParseVarDeclaration(t *testing.T) {
 	if len(prog.Body) != 1 {
 		t.Fatalf("expected 1 statement, got %d", len(prog.Body))
 	}
-	decl, ok := prog.Body[0].(*VarDeclaration)
+	decl, ok := prog.Body[0].(*parser.VarDeclaration)
 	if !ok {
 		t.Fatalf("expected VarDeclaration, got %T", prog.Body[0])
 	}
 	if decl.Name != "x" {
 		t.Errorf("expected name 'x', got '%s'", decl.Name)
 	}
-	num, ok := decl.Value.(*NumberLiteral)
+	num, ok := decl.Value.(*parser.NumberLiteral)
 	if !ok {
 		t.Fatalf("expected NumberLiteral, got %T", decl.Value)
 	}
@@ -61,7 +62,7 @@ func TestParseConstDeclaration(t *testing.T) {
 	if len(prog.Body) != 1 {
 		t.Fatalf("expected 1 statement, got %d", len(prog.Body))
 	}
-	decl, ok := prog.Body[0].(*ConstDeclaration)
+	decl, ok := prog.Body[0].(*parser.ConstDeclaration)
 	if !ok {
 		t.Fatalf("expected ConstDeclaration, got %T", prog.Body[0])
 	}
@@ -72,8 +73,8 @@ func TestParseConstDeclaration(t *testing.T) {
 
 func TestParseStringLiteral(t *testing.T) {
 	prog := parse(t, `dei s = "hello";`)
-	decl := prog.Body[0].(*VarDeclaration)
-	str, ok := decl.Value.(*StringLiteral)
+	decl := prog.Body[0].(*parser.VarDeclaration)
+	str, ok := decl.Value.(*parser.StringLiteral)
 	if !ok {
 		t.Fatalf("expected StringLiteral, got %T", decl.Value)
 	}
@@ -84,14 +85,14 @@ func TestParseStringLiteral(t *testing.T) {
 
 func TestParseBoolLiterals(t *testing.T) {
 	prog := parse(t, `dei a = can; dei b = cannot;`)
-	aDecl := prog.Body[0].(*VarDeclaration)
-	bDecl := prog.Body[1].(*VarDeclaration)
+	aDecl := prog.Body[0].(*parser.VarDeclaration)
+	bDecl := prog.Body[1].(*parser.VarDeclaration)
 
-	aBool := aDecl.Value.(*BoolLiteral)
+	aBool := aDecl.Value.(*parser.BoolLiteral)
 	if !aBool.Value {
 		t.Error("expected 'can' to be true")
 	}
-	bBool := bDecl.Value.(*BoolLiteral)
+	bBool := bDecl.Value.(*parser.BoolLiteral)
 	if bBool.Value {
 		t.Error("expected 'cannot' to be false")
 	}
@@ -99,8 +100,8 @@ func TestParseBoolLiterals(t *testing.T) {
 
 func TestParseNullLiteral(t *testing.T) {
 	prog := parse(t, `dei x = kosong;`)
-	decl := prog.Body[0].(*VarDeclaration)
-	_, ok := decl.Value.(*NullLiteral)
+	decl := prog.Body[0].(*parser.VarDeclaration)
+	_, ok := decl.Value.(*parser.NullLiteral)
 	if !ok {
 		t.Fatalf("expected NullLiteral, got %T", decl.Value)
 	}
@@ -108,7 +109,7 @@ func TestParseNullLiteral(t *testing.T) {
 
 func TestParseAssignment(t *testing.T) {
 	prog := parse(t, `tukar x = 10;`)
-	assign, ok := prog.Body[0].(*Assignment)
+	assign, ok := prog.Body[0].(*parser.Assignment)
 	if !ok {
 		t.Fatalf("expected Assignment, got %T", prog.Body[0])
 	}
@@ -119,7 +120,7 @@ func TestParseAssignment(t *testing.T) {
 
 func TestParseAssignmentPlusEquals(t *testing.T) {
 	prog := parse(t, `tukar x += 5;`)
-	assign := prog.Body[0].(*Assignment)
+	assign := prog.Body[0].(*parser.Assignment)
 	if assign.Operator != "+=" {
 		t.Errorf("expected +=, got %s", assign.Operator)
 	}
@@ -127,7 +128,7 @@ func TestParseAssignmentPlusEquals(t *testing.T) {
 
 func TestParseAssignmentMinusEquals(t *testing.T) {
 	prog := parse(t, `tukar x -= 3;`)
-	assign := prog.Body[0].(*Assignment)
+	assign := prog.Body[0].(*parser.Assignment)
 	if assign.Operator != "-=" {
 		t.Errorf("expected -=, got %s", assign.Operator)
 	}
@@ -135,11 +136,11 @@ func TestParseAssignmentMinusEquals(t *testing.T) {
 
 func TestParsePrintStatement(t *testing.T) {
 	prog := parse(t, `eh "hello";`)
-	stmt, ok := prog.Body[0].(*PrintStatement)
+	stmt, ok := prog.Body[0].(*parser.PrintStatement)
 	if !ok {
 		t.Fatalf("expected PrintStatement, got %T", prog.Body[0])
 	}
-	str := stmt.Value.(*StringLiteral)
+	str := stmt.Value.(*parser.StringLiteral)
 	if str.Value != "hello" {
 		t.Errorf("expected 'hello', got '%s'", str.Value)
 	}
@@ -147,7 +148,7 @@ func TestParsePrintStatement(t *testing.T) {
 
 func TestParseWarnStatement(t *testing.T) {
 	prog := parse(t, `walao eh "danger";`)
-	_, ok := prog.Body[0].(*WarnStatement)
+	_, ok := prog.Body[0].(*parser.WarnStatement)
 	if !ok {
 		t.Fatalf("expected WarnStatement, got %T", prog.Body[0])
 	}
@@ -155,7 +156,7 @@ func TestParseWarnStatement(t *testing.T) {
 
 func TestParseIfStatement(t *testing.T) {
 	prog := parse(t, `is it (can) { eh "yes"; }`)
-	stmt, ok := prog.Body[0].(*IfStatement)
+	stmt, ok := prog.Body[0].(*parser.IfStatement)
 	if !ok {
 		t.Fatalf("expected IfStatement, got %T", prog.Body[0])
 	}
@@ -174,7 +175,7 @@ func TestParseIfElseIfElse(t *testing.T) {
 			eh "other";
 		}
 	`)
-	stmt := prog.Body[0].(*IfStatement)
+	stmt := prog.Body[0].(*parser.IfStatement)
 	if len(stmt.ElseIfCases) != 1 {
 		t.Errorf("expected 1 else-if case, got %d", len(stmt.ElseIfCases))
 	}
@@ -185,7 +186,7 @@ func TestParseIfElseIfElse(t *testing.T) {
 
 func TestParseWhileLoop(t *testing.T) {
 	prog := parse(t, `one by one (x < 5) { eh x; }`)
-	stmt, ok := prog.Body[0].(*WhileStatement)
+	stmt, ok := prog.Body[0].(*parser.WhileStatement)
 	if !ok {
 		t.Fatalf("expected WhileStatement, got %T", prog.Body[0])
 	}
@@ -196,7 +197,7 @@ func TestParseWhileLoop(t *testing.T) {
 
 func TestParseForRange(t *testing.T) {
 	prog := parse(t, `one by one (i = 1 sampai 10) { eh i; }`)
-	stmt, ok := prog.Body[0].(*ForStatement)
+	stmt, ok := prog.Body[0].(*parser.ForStatement)
 	if !ok {
 		t.Fatalf("expected ForStatement, got %T", prog.Body[0])
 	}
@@ -207,7 +208,7 @@ func TestParseForRange(t *testing.T) {
 
 func TestParseForEach(t *testing.T) {
 	prog := parse(t, `one by one (item dalam items) { eh item; }`)
-	stmt, ok := prog.Body[0].(*ForEachStatement)
+	stmt, ok := prog.Body[0].(*parser.ForEachStatement)
 	if !ok {
 		t.Fatalf("expected ForEachStatement, got %T", prog.Body[0])
 	}
@@ -218,7 +219,7 @@ func TestParseForEach(t *testing.T) {
 
 func TestParseFunctionDeclaration(t *testing.T) {
 	prog := parse(t, `jom add(a, b) { nah a + b; }`)
-	stmt, ok := prog.Body[0].(*FunctionDeclaration)
+	stmt, ok := prog.Body[0].(*parser.FunctionDeclaration)
 	if !ok {
 		t.Fatalf("expected FunctionDeclaration, got %T", prog.Body[0])
 	}
@@ -232,7 +233,7 @@ func TestParseFunctionDeclaration(t *testing.T) {
 
 func TestParseFunctionNoParams(t *testing.T) {
 	prog := parse(t, `jom greet() { eh "hi"; }`)
-	stmt := prog.Body[0].(*FunctionDeclaration)
+	stmt := prog.Body[0].(*parser.FunctionDeclaration)
 	if len(stmt.Params) != 0 {
 		t.Errorf("expected 0 params, got %d", len(stmt.Params))
 	}
@@ -240,12 +241,12 @@ func TestParseFunctionNoParams(t *testing.T) {
 
 func TestParseReturnStatement(t *testing.T) {
 	prog := parse(t, `jom f() { nah 42; }`)
-	fn := prog.Body[0].(*FunctionDeclaration)
-	ret, ok := fn.Body[0].(*ReturnStatement)
+	fn := prog.Body[0].(*parser.FunctionDeclaration)
+	ret, ok := fn.Body[0].(*parser.ReturnStatement)
 	if !ok {
 		t.Fatalf("expected ReturnStatement, got %T", fn.Body[0])
 	}
-	num := ret.Value.(*NumberLiteral)
+	num := ret.Value.(*parser.NumberLiteral)
 	if num.Value != 42 {
 		t.Errorf("expected 42, got %f", num.Value)
 	}
@@ -253,9 +254,9 @@ func TestParseReturnStatement(t *testing.T) {
 
 func TestParseReturnEmpty(t *testing.T) {
 	prog := parse(t, `jom f() { nah; }`)
-	fn := prog.Body[0].(*FunctionDeclaration)
-	ret := fn.Body[0].(*ReturnStatement)
-	_, ok := ret.Value.(*NullLiteral)
+	fn := prog.Body[0].(*parser.FunctionDeclaration)
+	ret := fn.Body[0].(*parser.ReturnStatement)
+	_, ok := ret.Value.(*parser.NullLiteral)
 	if !ok {
 		t.Fatalf("expected NullLiteral for empty return, got %T", ret.Value)
 	}
@@ -263,15 +264,15 @@ func TestParseReturnEmpty(t *testing.T) {
 
 func TestParseBreakContinue(t *testing.T) {
 	prog := parse(t, `one by one (can) { gaodim; }`)
-	loop := prog.Body[0].(*WhileStatement)
-	_, ok := loop.Body[0].(*BreakStatement)
+	loop := prog.Body[0].(*parser.WhileStatement)
+	_, ok := loop.Body[0].(*parser.BreakStatement)
 	if !ok {
 		t.Fatalf("expected BreakStatement, got %T", loop.Body[0])
 	}
 
 	prog2 := parse(t, `one by one (can) { no need; }`)
-	loop2 := prog2.Body[0].(*WhileStatement)
-	_, ok = loop2.Body[0].(*ContinueStatement)
+	loop2 := prog2.Body[0].(*parser.WhileStatement)
+	_, ok = loop2.Body[0].(*parser.ContinueStatement)
 	if !ok {
 		t.Fatalf("expected ContinueStatement, got %T", loop2.Body[0])
 	}
@@ -279,7 +280,7 @@ func TestParseBreakContinue(t *testing.T) {
 
 func TestParseTryCatch(t *testing.T) {
 	prog := parse(t, `try see { eh "try"; } alamak (e) { eh e; } confirm need { eh "finally"; }`)
-	stmt, ok := prog.Body[0].(*TryCatchStatement)
+	stmt, ok := prog.Body[0].(*parser.TryCatchStatement)
 	if !ok {
 		t.Fatalf("expected TryCatchStatement, got %T", prog.Body[0])
 	}
@@ -299,7 +300,7 @@ func TestParseTryCatch(t *testing.T) {
 
 func TestParseTryCatchOnly(t *testing.T) {
 	prog := parse(t, `try see { eh "try"; } alamak (e) { eh e; }`)
-	stmt := prog.Body[0].(*TryCatchStatement)
+	stmt := prog.Body[0].(*parser.TryCatchStatement)
 	if stmt.FinallyBody != nil {
 		t.Error("expected no finally body")
 	}
@@ -307,11 +308,11 @@ func TestParseTryCatchOnly(t *testing.T) {
 
 func TestParseThrow(t *testing.T) {
 	prog := parse(t, `mampus "error!";`)
-	stmt, ok := prog.Body[0].(*ThrowStatement)
+	stmt, ok := prog.Body[0].(*parser.ThrowStatement)
 	if !ok {
 		t.Fatalf("expected ThrowStatement, got %T", prog.Body[0])
 	}
-	str := stmt.Value.(*StringLiteral)
+	str := stmt.Value.(*parser.StringLiteral)
 	if str.Value != "error!" {
 		t.Errorf("expected 'error!', got '%s'", str.Value)
 	}
@@ -319,7 +320,7 @@ func TestParseThrow(t *testing.T) {
 
 func TestParseImport(t *testing.T) {
 	prog := parse(t, `tapau "math.boleh";`)
-	stmt, ok := prog.Body[0].(*ImportStatement)
+	stmt, ok := prog.Body[0].(*parser.ImportStatement)
 	if !ok {
 		t.Fatalf("expected ImportStatement, got %T", prog.Body[0])
 	}
@@ -330,8 +331,8 @@ func TestParseImport(t *testing.T) {
 
 func TestParseArrayLiteral(t *testing.T) {
 	prog := parse(t, `dei arr = [1, 2, 3];`)
-	decl := prog.Body[0].(*VarDeclaration)
-	arr, ok := decl.Value.(*ArrayLiteral)
+	decl := prog.Body[0].(*parser.VarDeclaration)
+	arr, ok := decl.Value.(*parser.ArrayLiteral)
 	if !ok {
 		t.Fatalf("expected ArrayLiteral, got %T", decl.Value)
 	}
@@ -342,8 +343,8 @@ func TestParseArrayLiteral(t *testing.T) {
 
 func TestParseEmptyArray(t *testing.T) {
 	prog := parse(t, `dei arr = [];`)
-	decl := prog.Body[0].(*VarDeclaration)
-	arr := decl.Value.(*ArrayLiteral)
+	decl := prog.Body[0].(*parser.VarDeclaration)
+	arr := decl.Value.(*parser.ArrayLiteral)
 	if len(arr.Elements) != 0 {
 		t.Errorf("expected 0 elements, got %d", len(arr.Elements))
 	}
@@ -351,8 +352,8 @@ func TestParseEmptyArray(t *testing.T) {
 
 func TestParseTrailingCommaArray(t *testing.T) {
 	prog := parse(t, `dei arr = [1, 2,];`)
-	decl := prog.Body[0].(*VarDeclaration)
-	arr := decl.Value.(*ArrayLiteral)
+	decl := prog.Body[0].(*parser.VarDeclaration)
+	arr := decl.Value.(*parser.ArrayLiteral)
 	if len(arr.Elements) != 2 {
 		t.Errorf("expected 2 elements, got %d", len(arr.Elements))
 	}
@@ -360,16 +361,16 @@ func TestParseTrailingCommaArray(t *testing.T) {
 
 func TestParseBinaryExpression(t *testing.T) {
 	prog := parse(t, `dei x = 1 + 2 * 3;`)
-	decl := prog.Body[0].(*VarDeclaration)
+	decl := prog.Body[0].(*parser.VarDeclaration)
 	// Should be 1 + (2 * 3) due to precedence
-	add, ok := decl.Value.(*BinaryExpr)
+	add, ok := decl.Value.(*parser.BinaryExpr)
 	if !ok {
 		t.Fatalf("expected BinaryExpr, got %T", decl.Value)
 	}
 	if add.Operator != "+" {
 		t.Errorf("expected +, got %s", add.Operator)
 	}
-	mul, ok := add.Right.(*BinaryExpr)
+	mul, ok := add.Right.(*parser.BinaryExpr)
 	if !ok {
 		t.Fatalf("expected BinaryExpr on right, got %T", add.Right)
 	}
@@ -389,8 +390,8 @@ func TestParseComparisonOperators(t *testing.T) {
 	}
 	for _, src := range tests {
 		prog := parse(t, src)
-		decl := prog.Body[0].(*VarDeclaration)
-		_, ok := decl.Value.(*BinaryExpr)
+		decl := prog.Body[0].(*parser.VarDeclaration)
+		_, ok := decl.Value.(*parser.BinaryExpr)
 		if !ok {
 			t.Errorf("expected BinaryExpr for %q, got %T", src, decl.Value)
 		}
@@ -399,9 +400,9 @@ func TestParseComparisonOperators(t *testing.T) {
 
 func TestParseLogicalOperators(t *testing.T) {
 	prog := parse(t, `dei x = can dan cannot atau can;`)
-	decl := prog.Body[0].(*VarDeclaration)
+	decl := prog.Body[0].(*parser.VarDeclaration)
 	// "atau" has lower precedence than "dan"
-	or, ok := decl.Value.(*BinaryExpr)
+	or, ok := decl.Value.(*parser.BinaryExpr)
 	if !ok {
 		t.Fatalf("expected BinaryExpr, got %T", decl.Value)
 	}
@@ -412,8 +413,8 @@ func TestParseLogicalOperators(t *testing.T) {
 
 func TestParseUnaryExpression(t *testing.T) {
 	prog := parse(t, `dei x = -5;`)
-	decl := prog.Body[0].(*VarDeclaration)
-	unary, ok := decl.Value.(*UnaryExpr)
+	decl := prog.Body[0].(*parser.VarDeclaration)
+	unary, ok := decl.Value.(*parser.UnaryExpr)
 	if !ok {
 		t.Fatalf("expected UnaryExpr, got %T", decl.Value)
 	}
@@ -424,8 +425,8 @@ func TestParseUnaryExpression(t *testing.T) {
 
 func TestParseNotExpression(t *testing.T) {
 	prog := parse(t, `dei x = !can;`)
-	decl := prog.Body[0].(*VarDeclaration)
-	unary := decl.Value.(*UnaryExpr)
+	decl := prog.Body[0].(*parser.VarDeclaration)
+	unary := decl.Value.(*parser.UnaryExpr)
 	if unary.Operator != "!" {
 		t.Errorf("expected !, got %s", unary.Operator)
 	}
@@ -433,8 +434,8 @@ func TestParseNotExpression(t *testing.T) {
 
 func TestParseFunctionCall(t *testing.T) {
 	prog := parse(t, `foo(1, 2);`)
-	exprStmt := prog.Body[0].(*ExpressionStatement)
-	call, ok := exprStmt.Expression.(*CallExpr)
+	exprStmt := prog.Body[0].(*parser.ExpressionStatement)
+	call, ok := exprStmt.Expression.(*parser.CallExpr)
 	if !ok {
 		t.Fatalf("expected CallExpr, got %T", exprStmt.Expression)
 	}
@@ -445,8 +446,8 @@ func TestParseFunctionCall(t *testing.T) {
 
 func TestParseFunctionCallNoArgs(t *testing.T) {
 	prog := parse(t, `foo();`)
-	exprStmt := prog.Body[0].(*ExpressionStatement)
-	call := exprStmt.Expression.(*CallExpr)
+	exprStmt := prog.Body[0].(*parser.ExpressionStatement)
+	call := exprStmt.Expression.(*parser.CallExpr)
 	if len(call.Args) != 0 {
 		t.Errorf("expected 0 args, got %d", len(call.Args))
 	}
@@ -454,12 +455,12 @@ func TestParseFunctionCallNoArgs(t *testing.T) {
 
 func TestParseIndexExpression(t *testing.T) {
 	prog := parse(t, `dei x = arr[0];`)
-	decl := prog.Body[0].(*VarDeclaration)
-	idx, ok := decl.Value.(*IndexExpr)
+	decl := prog.Body[0].(*parser.VarDeclaration)
+	idx, ok := decl.Value.(*parser.IndexExpr)
 	if !ok {
 		t.Fatalf("expected IndexExpr, got %T", decl.Value)
 	}
-	num := idx.Index.(*NumberLiteral)
+	num := idx.Index.(*parser.NumberLiteral)
 	if num.Value != 0 {
 		t.Errorf("expected index 0, got %f", num.Value)
 	}
@@ -467,8 +468,8 @@ func TestParseIndexExpression(t *testing.T) {
 
 func TestParseMemberExpression(t *testing.T) {
 	prog := parse(t, `dei x = arr.panjang;`)
-	decl := prog.Body[0].(*VarDeclaration)
-	member, ok := decl.Value.(*MemberExpr)
+	decl := prog.Body[0].(*parser.VarDeclaration)
+	member, ok := decl.Value.(*parser.MemberExpr)
 	if !ok {
 		t.Fatalf("expected MemberExpr, got %T", decl.Value)
 	}
@@ -479,8 +480,8 @@ func TestParseMemberExpression(t *testing.T) {
 
 func TestParseGroupedExpression(t *testing.T) {
 	prog := parse(t, `dei x = (1 + 2) * 3;`)
-	decl := prog.Body[0].(*VarDeclaration)
-	mul, ok := decl.Value.(*BinaryExpr)
+	decl := prog.Body[0].(*parser.VarDeclaration)
+	mul, ok := decl.Value.(*parser.BinaryExpr)
 	if !ok {
 		t.Fatalf("expected BinaryExpr, got %T", decl.Value)
 	}
@@ -491,8 +492,8 @@ func TestParseGroupedExpression(t *testing.T) {
 
 func TestParseAnonFunction(t *testing.T) {
 	prog := parse(t, `dei f = jom (x) { nah x + 1; };`)
-	decl := prog.Body[0].(*VarDeclaration)
-	anon, ok := decl.Value.(*AnonFunction)
+	decl := prog.Body[0].(*parser.VarDeclaration)
+	anon, ok := decl.Value.(*parser.AnonFunction)
 	if !ok {
 		t.Fatalf("expected AnonFunction, got %T", decl.Value)
 	}

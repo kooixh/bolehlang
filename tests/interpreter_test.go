@@ -1,4 +1,4 @@
-package interpreter
+package tests
 
 import (
 	"bytes"
@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/kooixh/bolehlang/interpreter"
 	"github.com/kooixh/bolehlang/lexer"
 	"github.com/kooixh/bolehlang/parser"
 )
@@ -67,7 +68,7 @@ func runSource(source string) error {
 	if err != nil {
 		return fmt.Errorf("parser: %w", err)
 	}
-	interp := New("test.boleh")
+	interp := interpreter.New("test.boleh")
 	return interp.Run(program)
 }
 

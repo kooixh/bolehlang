@@ -31,3 +31,18 @@ type BuiltinFunc struct {
 	Name string
 	Fn   func(args []interface{}) (interface{}, error)
 }
+
+// Exception represents a typed error in bolehlang.
+
+type Exception struct {
+	Type    string
+	Message string
+}
+
+// Default exception types
+const (
+	ExMakKauHijau = "MakKauHijauException" // NullPointer
+	ExBoJio       = "BoJioException"       // ImportNotFound
+	ExApaNi       = "ApaNiException"       // Invalid types
+	ExKantoi      = "KantoiException"      // General runtime error
+)

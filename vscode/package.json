@@ -1,0 +1,35 @@
+{
+  "name": "bolehlang",
+  "displayName": "bolehlang",
+  "description": "Syntax highlighting for the bolehlang programming language",
+  "version": "0.1.0",
+  "publisher": "kooixh",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "bolehlang",
+        "aliases": [
+          "bolehlang",
+          "boleh"
+        ],
+        "extensions": [
+          ".boleh"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "bolehlang",
+        "scopeName": "source.boleh",
+        "path": "./syntaxes/bolehlang.tmLanguage.json"
+      }
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+
+// eh: declare variables
+dei nama = "Ali";
+dei umur = 25;
+dei programmer = can;
+
+eh "Nama: " + nama;
+eh "Umur: " + umur;
+eh "Programmer: " + programmer;
+
+// eh: constant - cannot change one
+memang dei PI = 3.14159;
+eh "PI = " + PI;
+
+// eh: reassign variable
+tukar umur = 26;
+eh "Happy Birthday! Now umur: " + umur;
+

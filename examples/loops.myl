@@ -1,0 +1,21 @@
+
+// eh: while-style loop
+dei count = 0;
+one by one (count < 5) {
+    eh "Count: " + count;
+    tukar count += 1;
+}
+
+// eh: range-style loop
+eh "---";
+one by one (i = 1 sampai 5) {
+    eh "Number: " + i;
+}
+
+// eh: foreach-style loop
+eh "---";
+dei fruits = ["durian", "rambutan", "mangosteen", "cempedak"];
+one by one (buah dalam fruits) {
+    eh "Buah: " + buah;
+}
+

@@ -1,0 +1,12 @@
+
+// eh: try-catch example
+try see {
+    eh "Cuba buat sesuatu...";
+    mampus "Alamak something went wrong!";
+    eh "This won't print";
+} alamak (err) {
+    eh "Kantoi! Error: " + err;
+} confirm need {
+    eh "Mesti buat: cleanup done";
+}
+

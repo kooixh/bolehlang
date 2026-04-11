@@ -1,0 +1,6 @@
+// eh: import example
+tapau "math.myl";
+
+eh "2 + 3 = " + tambah(2, 3);
+eh "4 * 5 = " + darab(4, 5);
+eh "2 ^ 10 = " + kuasa(2, 10);

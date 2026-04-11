@@ -1,0 +1,13 @@
+
+one by one (i = 1 sampai 15) {
+    is it (i % 15 sama 0) {
+        eh "FizzBuzz";
+    } or is it (i % 3 sama 0) {
+        eh "Fizz";
+    } or is it (i % 5 sama 0) {
+        eh "Buzz";
+    } abuden {
+        eh i;
+    }
+}
+

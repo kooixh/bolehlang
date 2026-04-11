@@ -1,0 +1,17 @@
+// eh: math utility functions
+
+jom tambah(a, b) {
+    nah a + b;
+}
+
+jom darab(a, b) {
+    nah a * b;
+}
+
+jom kuasa(base, exp) {
+    dei result = 1;
+    one by one (i = 1 sampai exp) {
+        tukar result = result * base;
+    }
+    nah result;
+}

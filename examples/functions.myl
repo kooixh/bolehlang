@@ -1,0 +1,34 @@
+
+// eh: basic function
+jom salam(nama) {
+    nah "Assalamualaikum, " + nama + "!";
+}
+
+eh salam("Ahmad");
+eh salam("Siti");
+
+// eh: recursive function - factorial
+jom factorial(n) {
+    is it (n <= 1) {
+        nah 1;
+    }
+    nah n * factorial(n - 1);
+}
+
+eh "5! = " + factorial(5);
+
+// eh: closure - counter
+jom buatCounter(mula) {
+    dei count = mula;
+    jom tambah() {
+        tukar count = count + 1;
+        nah count;
+    }
+    nah tambah;
+}
+
+dei counter = buatCounter(0);
+eh counter();
+eh counter();
+eh counter();
+

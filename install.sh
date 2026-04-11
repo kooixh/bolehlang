@@ -16,4 +16,4 @@ fi
 
 echo ""
 echo "Done! bolehlang installed as '$BINARY_NAME'."
-echo "Try it out: boleh examples/hello.myl"
+echo "Try it out: boleh examples/hello.boleh"

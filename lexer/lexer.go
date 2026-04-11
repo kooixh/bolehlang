@@ -37,8 +37,8 @@ const (
 	TOKEN_ONE_BY_ONE
 	TOKEN_SAMPAI
 	TOKEN_DALAM
-	TOKEN_SUDAH_LAH
-	TOKEN_SKIP_LAH
+	TOKEN_GAODIM
+	TOKEN_NO_NEED
 
 	// Functions
 	TOKEN_JOM
@@ -109,9 +109,9 @@ var keywords = []struct {
 	{"cannot", TOKEN_CANNOT},
 	{"tak sama", TOKEN_TAK_SAMA},
 	{"confirm need", TOKEN_CONFIRM_NEED},
-	{"sudah lah", TOKEN_SUDAH_LAH},
+	{"gaodim", TOKEN_GAODIM},
 	{"try see", TOKEN_TRY_SEE},
-	{"skip lah", TOKEN_SKIP_LAH},
+	{"no need", TOKEN_NO_NEED},
 	{"sampai", TOKEN_SAMPAI},
 	{"walao eh", TOKEN_WALAO_EH},
 	{"eh", TOKEN_EH},

@@ -38,7 +38,7 @@ eh "Hello World! Apa khabar?";
 
 **bolehlang** is a dynamically-typed, interpreted programming language written in Go. It replaces conventional programming keywords with Manglish (Malaysian English) slang and expressions, making it both a fun educational tool and a love letter to Malaysian culture.
 
-The file extension for bolehlang programs is `.myl` (short for "Malaysian Language").
+The file extension for bolehlang programs is `.boleh` (short for "Malaysian Language").
 
 ## Features
 
@@ -59,31 +59,27 @@ The file extension for bolehlang programs is `.myl` (short for "Malaysian Langua
 
 - [Go](https://go.dev/dl/) 1.22 or later
 
-### Build from source
+### Install
 
 ```bash
 git clone https://github.com/kooixh/bolehlang.git
 cd bolehlang
-go build -o bolehlang .
+./install.sh
 ```
 
-This produces a `bolehlang` binary in the current directory. You can move it to your `$PATH`:
-
-```bash
-mv bolehlang /usr/local/bin/
-```
+This builds the project and installs the `boleh` command to `/usr/local/bin` so you can use it from anywhere.
 
 ## Usage
 
 ```bash
 # Run a bolehlang program
-bolehlang hello.myl
+boleh hello.boleh
 
 # Show version
-bolehlang --version
+boleh --version
 
 # Show help
-bolehlang --help
+boleh --help
 ```
 
 ## Language Reference
@@ -211,13 +207,13 @@ one by one (buah dalam fruits) {
 
 #### Loop control
 
-- `sudah lah` — break out of a loop (literally "enough already")
-- `skip lah` — skip to the next iteration (literally "skip it")
+- `gaodim` — break out of a loop (literally "enough already")
+- `no need` — skip to the next iteration (literally "skip it")
 
 ```
 one by one (i = 1 sampai 10) {
     is it (i sama 5) {
-        sudah lah;
+        gaodim;
     }
     eh i;
 }
@@ -302,10 +298,10 @@ try see {
 
 ### Imports
 
-Use `tapau` (meaning "takeaway") to import code from other `.myl` files. All declarations from the imported file become available in the current scope.
+Use `tapau` (meaning "takeaway") to import code from other `.boleh` files. All declarations from the imported file become available in the current scope.
 
 ```
-tapau "math.myl";
+tapau "math.boleh";
 
 eh tambah(2, 3);
 ```
@@ -313,15 +309,15 @@ eh tambah(2, 3);
 Paths are resolved relative to the importing file. Circular imports are detected and safely skipped — each file is only executed once.
 
 ```
-// eh: lib/helpers.myl
+// eh: lib/helpers.boleh
 jom greet(nama) {
     nah "Hello, " + nama + "!";
 }
 ```
 
 ```
-// eh: main.myl
-tapau "lib/helpers.myl";
+// eh: main.boleh
+tapau "lib/helpers.boleh";
 
 eh greet("Ali");
 ```
@@ -425,8 +421,8 @@ A complete mapping of bolehlang keywords to their conventional equivalents:
 | `one by one` | `for` / `while` | Loop |
 | `sampai` | `to` / `until` | Range end |
 | `dalam` | `in` | Iterate over collection |
-| `sudah lah` | `break` | Break from loop ("enough already") |
-| `skip lah` | `continue` | Skip iteration |
+| `gaodim` | `break` | Break from loop ("enough already") |
+| `no need` | `continue` | Skip iteration |
 | `jom` | `function` | Declare function ("let's go") |
 | `nah` | `return` | Return value ("here, take it") |
 | `can` | `true` | Boolean true |
@@ -456,14 +452,14 @@ bolehlang/
 ├── interpreter/
 │   └── interpreter.go      # Tree-walking interpreter and built-ins
 └── examples/
-    ├── hello.myl            # Hello world
-    ├── variables.myl        # Variables and constants
-    ├── loops.myl            # While, range, and foreach loops
-    ├── functions.myl        # Functions, recursion, closures
-    ├── fizzbuzz.myl         # Classic FizzBuzz
-    ├── trycatch.myl         # Error handling
-    ├── math.myl             # Importable math utilities
-    └── imports.myl          # Import example using tapau
+    ├── hello.boleh            # Hello world
+    ├── variables.boleh        # Variables and constants
+    ├── loops.boleh            # While, range, and foreach loops
+    ├── functions.boleh        # Functions, recursion, closures
+    ├── fizzbuzz.boleh         # Classic FizzBuzz
+    ├── trycatch.boleh         # Error handling
+    ├── math.boleh             # Importable math utilities
+    └── imports.boleh          # Import example using tapau
 ```
 
 ## Architecture

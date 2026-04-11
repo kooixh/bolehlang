@@ -290,11 +290,11 @@ func (p *Parser) parseStatement() (Node, error) {
 		return p.parseFunctionDeclaration()
 	case lexer.TOKEN_NAH:
 		return p.parseReturn()
-	case lexer.TOKEN_SUDAH_LAH:
+	case lexer.TOKEN_GAODIM:
 		p.advance()
 		p.skipSemicolon()
 		return &BreakStatement{Line: tok.Line}, nil
-	case lexer.TOKEN_SKIP_LAH:
+	case lexer.TOKEN_NO_NEED:
 		p.advance()
 		p.skipSemicolon()
 		return &ContinueStatement{Line: tok.Line}, nil

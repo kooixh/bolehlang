@@ -67,12 +67,12 @@ func run(source string, filePath string) error {
 func printUsage() {
 	fmt.Println("🇲🇾 bolehlang — Malaysian English programming language")
 	fmt.Println()
-	fmt.Println("Usage: bolehlang <file.myl>")
+	fmt.Println("Usage: bolehlang <file.boleh>")
 	fmt.Println()
 	fmt.Println("Options:")
 	fmt.Println("  -h, --help      Show this help")
 	fmt.Println("  -v, --version   Show version")
 	fmt.Println()
 	fmt.Println("Example:")
-	fmt.Println("  bolehlang hello.myl")
+	fmt.Println("  bolehlang hello.boleh")
 }

@@ -1,0 +1,226 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "bolehlang",
+  "scopeName": "source.boleh",
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#strings" },
+    { "include": "#numbers" },
+    { "include": "#constants" },
+    { "include": "#keywords-multiword" },
+    { "include": "#keywords" },
+    { "include": "#functions" },
+    { "include": "#operators" },
+    { "include": "#punctuation" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.boleh",
+          "match": "//.*$"
+        },
+        {
+          "name": "comment.block.boleh",
+          "begin": "alamak mula",
+          "end": "alamak habis"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.boleh",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.boleh",
+              "match": "\\\\[nrt\\\\\"']"
+            }
+          ]
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.boleh",
+          "match": "\\b[0-9]+(\\.[0-9]+)?\\b"
+        }
+      ]
+    },
+    "constants": {
+      "patterns": [
+        {
+          "name": "constant.language.boolean.true.boleh",
+          "match": "\\bcan\\b"
+        },
+        {
+          "name": "constant.language.boolean.false.boleh",
+          "match": "\\bcannot\\b"
+        },
+        {
+          "name": "constant.language.null.boleh",
+          "match": "\\bkosong\\b"
+        }
+      ]
+    },
+    "keywords-multiword": {
+      "patterns": [
+        {
+          "name": "keyword.control.loop.boleh",
+          "match": "\\bone\\s+by\\s+one\\b"
+        },
+        {
+          "name": "storage.type.constant.boleh",
+          "match": "\\bmemang\\s+dei\\b"
+        },
+        {
+          "name": "keyword.control.conditional.boleh",
+          "match": "\\bor\\s+is\\s+it\\b"
+        },
+        {
+          "name": "keyword.control.conditional.boleh",
+          "match": "\\bis\\s+it\\b"
+        },
+        {
+          "name": "keyword.control.trycatch.boleh",
+          "match": "\\btry\\s+see\\b"
+        },
+        {
+          "name": "keyword.control.trycatch.boleh",
+          "match": "\\bconfirm\\s+need\\b"
+        },
+        {
+          "name": "keyword.operator.comparison.boleh",
+          "match": "\\btak\\s+sama\\b"
+        },
+        {
+          "name": "keyword.control.flow.boleh",
+          "match": "\\bgaodim\\b"
+        },
+        {
+          "name": "keyword.control.flow.boleh",
+          "match": "\\bno\\s+need\\b"
+        },
+        {
+          "name": "keyword.other.print.warn.boleh",
+          "match": "\\bwalao\\s+eh\\b"
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "storage.type.variable.boleh",
+          "match": "\\bdei\\b"
+        },
+        {
+          "name": "keyword.operator.assignment.boleh",
+          "match": "\\btukar\\b"
+        },
+        {
+          "name": "keyword.other.print.boleh",
+          "match": "\\beh\\b"
+        },
+        {
+          "name": "keyword.control.conditional.boleh",
+          "match": "\\babuden\\b"
+        },
+        {
+          "name": "keyword.control.loop.boleh",
+          "match": "\\bsampai\\b"
+        },
+        {
+          "name": "keyword.control.loop.boleh",
+          "match": "\\bdalam\\b"
+        },
+        {
+          "name": "keyword.declaration.function.boleh",
+          "match": "\\bjom\\b"
+        },
+        {
+          "name": "keyword.control.return.boleh",
+          "match": "\\bnah\\b"
+        },
+        {
+          "name": "keyword.operator.comparison.boleh",
+          "match": "\\bsama\\b"
+        },
+        {
+          "name": "keyword.operator.logical.boleh",
+          "match": "\\bdan\\b"
+        },
+        {
+          "name": "keyword.operator.logical.boleh",
+          "match": "\\batau\\b"
+        },
+        {
+          "name": "keyword.control.trycatch.boleh",
+          "match": "\\balamak\\b"
+        },
+        {
+          "name": "keyword.control.throw.boleh",
+          "match": "\\bmampus\\b"
+        },
+        {
+          "name": "keyword.control.import.boleh",
+          "match": "\\btapau\\b"
+        }
+      ]
+    },
+    "functions": {
+      "patterns": [
+        {
+          "name": "support.function.builtin.boleh",
+          "match": "\\b(panjang|jenis|masuk|potong|nombor|ayat|cincai)\\b"
+        },
+        {
+          "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\s*\\(",
+          "captures": {
+            "1": {
+              "name": "entity.name.function.boleh"
+            }
+          }
+        }
+      ]
+    },
+    "operators": {
+      "patterns": [
+        {
+          "name": "keyword.operator.assignment.boleh",
+          "match": "(\\+=|-=|=)"
+        },
+        {
+          "name": "keyword.operator.comparison.boleh",
+          "match": "(<=|>=|<|>)"
+        },
+        {
+          "name": "keyword.operator.arithmetic.boleh",
+          "match": "[+\\-*/%]"
+        },
+        {
+          "name": "keyword.operator.logical.boleh",
+          "match": "!"
+        }
+      ]
+    },
+    "punctuation": {
+      "patterns": [
+        {
+          "name": "punctuation.terminator.boleh",
+          "match": ";"
+        },
+        {
+          "name": "punctuation.separator.boleh",
+          "match": ","
+        },
+        {
+          "name": "punctuation.accessor.boleh",
+          "match": "\\."
+        }
+      ]
+    }
+  }
+}

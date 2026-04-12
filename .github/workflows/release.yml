@@ -33,6 +33,3 @@ jobs:
           args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Needed only if the `brews` section is enabled. Create a PAT with
-          # `repo` scope on the homebrew-tap repo and add it as HOMEBREW_TAP_TOKEN.
-          HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}

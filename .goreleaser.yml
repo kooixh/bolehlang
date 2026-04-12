@@ -62,17 +62,3 @@ release:
   draft: false
   prerelease: auto
   name_template: "v{{ .Version }}"
-
-brews:
-  - name: boleh
-    repository:
-      owner: kooixh
-      name: homebrew-tap
-    directory: Formula
-    homepage: https://github.com/kooixh/bolehlang
-    description: A Manglish-inspired dynamically typed interpreted language.
-    license: MIT
-    test: |
-      system "#{bin}/boleh", "--version"
-    install: |
-      bin.install "boleh"

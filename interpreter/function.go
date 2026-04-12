@@ -19,10 +19,11 @@ type throwSignal struct {
 // Function value (user-defined)
 
 type Function struct {
-	Name    string
-	Params  []string
-	Body    []parser.Node
-	Closure *Environment
+	Name       string
+	Params     []parser.Param
+	ReturnType string
+	Body       []parser.Node
+	Closure    *Environment
 }
 
 // BuiltinFunc is a built-in callable.

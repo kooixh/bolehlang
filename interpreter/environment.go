@@ -7,6 +7,7 @@ import "fmt"
 type Environment struct {
 	vars      map[string]interface{}
 	constants map[string]bool
+	types     map[string]string // variable name -> type constraint ("" = untyped)
 	parent    *Environment
 }
 
@@ -14,6 +15,7 @@ func NewEnvironment(parent *Environment) *Environment {
 	return &Environment{
 		vars:      make(map[string]interface{}),
 		constants: make(map[string]bool),
+		types:     make(map[string]string),
 		parent:    parent,
 	}
 }
@@ -23,6 +25,22 @@ func (e *Environment) Set(name string, value interface{}, isConst bool) {
 	if isConst {
 		e.constants[name] = true
 	}
+}
+
+func (e *Environment) SetType(name string, typeName string) {
+	if typeName != "" {
+		e.types[name] = typeName
+	}
+}
+
+func (e *Environment) GetType(name string) string {
+	if t, ok := e.types[name]; ok {
+		return t
+	}
+	if e.parent != nil {
+		return e.parent.GetType(name)
+	}
+	return ""
 }
 
 func (e *Environment) Get(name string) (interface{}, bool) {

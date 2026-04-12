@@ -497,7 +497,7 @@ func TestParseAnonFunction(t *testing.T) {
 	if !ok {
 		t.Fatalf("expected AnonFunction, got %T", decl.Value)
 	}
-	if len(anon.Params) != 1 || anon.Params[0] != "x" {
+	if len(anon.Params) != 1 || anon.Params[0].Name != "x" {
 		t.Errorf("expected params [x], got %v", anon.Params)
 	}
 }
@@ -516,4 +516,70 @@ func TestParseErrorMissingBrace(t *testing.T) {
 
 func TestParseErrorMissingParen(t *testing.T) {
 	parseFail(t, `is it (can { eh "yes"; }`)
+}
+
+// --- Type annotations ---
+
+func TestParseVarWithType(t *testing.T) {
+	prog := parse(t, `dei x: number = 42;`)
+	decl := prog.Body[0].(*parser.VarDeclaration)
+	if decl.TypeName != "number" {
+		t.Errorf("expected type 'number', got '%s'", decl.TypeName)
+	}
+}
+
+func TestParseVarWithoutType(t *testing.T) {
+	prog := parse(t, `dei x = 42;`)
+	decl := prog.Body[0].(*parser.VarDeclaration)
+	if decl.TypeName != "" {
+		t.Errorf("expected empty type, got '%s'", decl.TypeName)
+	}
+}
+
+func TestParseConstWithType(t *testing.T) {
+	prog := parse(t, `memang dei PI: number = 3.14;`)
+	decl := prog.Body[0].(*parser.ConstDeclaration)
+	if decl.TypeName != "number" {
+		t.Errorf("expected type 'number', got '%s'", decl.TypeName)
+	}
+}
+
+func TestParseFunctionWithTypedParams(t *testing.T) {
+	prog := parse(t, `jom add(a: number, b: number): number { nah a + b; }`)
+	fn := prog.Body[0].(*parser.FunctionDeclaration)
+	if len(fn.Params) != 2 {
+		t.Fatalf("expected 2 params, got %d", len(fn.Params))
+	}
+	if fn.Params[0].Name != "a" || fn.Params[0].TypeName != "number" {
+		t.Errorf("expected param a:number, got %s:%s", fn.Params[0].Name, fn.Params[0].TypeName)
+	}
+	if fn.Params[1].Name != "b" || fn.Params[1].TypeName != "number" {
+		t.Errorf("expected param b:number, got %s:%s", fn.Params[1].Name, fn.Params[1].TypeName)
+	}
+	if fn.ReturnType != "number" {
+		t.Errorf("expected return type 'number', got '%s'", fn.ReturnType)
+	}
+}
+
+func TestParseFunctionMixedTypedParams(t *testing.T) {
+	prog := parse(t, `jom greet(name: string, times) { eh name; }`)
+	fn := prog.Body[0].(*parser.FunctionDeclaration)
+	if fn.Params[0].TypeName != "string" {
+		t.Errorf("expected param 0 type 'string', got '%s'", fn.Params[0].TypeName)
+	}
+	if fn.Params[1].TypeName != "" {
+		t.Errorf("expected param 1 type '', got '%s'", fn.Params[1].TypeName)
+	}
+}
+
+func TestParseAnonFunctionWithTypes(t *testing.T) {
+	prog := parse(t, `dei f = jom (x: number): number { nah x + 1; };`)
+	decl := prog.Body[0].(*parser.VarDeclaration)
+	anon := decl.Value.(*parser.AnonFunction)
+	if anon.Params[0].TypeName != "number" {
+		t.Errorf("expected param type 'number', got '%s'", anon.Params[0].TypeName)
+	}
+	if anon.ReturnType != "number" {
+		t.Errorf("expected return type 'number', got '%s'", anon.ReturnType)
+	}
 }

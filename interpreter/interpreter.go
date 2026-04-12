@@ -109,7 +109,11 @@ func (interp *Interpreter) execStatement(node parser.Node, env *Environment) err
 		if err != nil {
 			return fmt.Errorf("line %d: %w", n.Line, err)
 		}
+		if n.TypeName != "" {
+			checkType(val, n.TypeName, n.Name, n.Line)
+		}
 		env.Set(n.Name, val, false)
+		env.SetType(n.Name, n.TypeName)
 		return nil
 
 	case *parser.ConstDeclaration:
@@ -117,7 +121,11 @@ func (interp *Interpreter) execStatement(node parser.Node, env *Environment) err
 		if err != nil {
 			return fmt.Errorf("line %d: %w", n.Line, err)
 		}
+		if n.TypeName != "" {
+			checkType(val, n.TypeName, n.Name, n.Line)
+		}
 		env.Set(n.Name, val, true)
+		env.SetType(n.Name, n.TypeName)
 		return nil
 
 	case *parser.Assignment:
@@ -127,6 +135,9 @@ func (interp *Interpreter) execStatement(node parser.Node, env *Environment) err
 		}
 		switch n.Operator {
 		case "=":
+			if t := env.GetType(n.Name); t != "" {
+				checkType(val, t, n.Name, n.Line)
+			}
 			if err := env.Assign(n.Name, val); err != nil {
 				return fmt.Errorf("line %d: %s", n.Line, err)
 			}
@@ -136,6 +147,9 @@ func (interp *Interpreter) execStatement(node parser.Node, env *Environment) err
 				return fmt.Errorf("line %d: variable '%s' not found", n.Line, n.Name)
 			}
 			result := addValues(current, val)
+			if t := env.GetType(n.Name); t != "" {
+				checkType(result, t, n.Name, n.Line)
+			}
 			if err := env.Assign(n.Name, result); err != nil {
 				return fmt.Errorf("line %d: %s", n.Line, err)
 			}
@@ -145,6 +159,9 @@ func (interp *Interpreter) execStatement(node parser.Node, env *Environment) err
 				return fmt.Errorf("line %d: variable '%s' not found", n.Line, n.Name)
 			}
 			result := toNumber(current) - toNumber(val)
+			if t := env.GetType(n.Name); t != "" {
+				checkType(result, t, n.Name, n.Line)
+			}
 			if err := env.Assign(n.Name, result); err != nil {
 				return fmt.Errorf("line %d: %s", n.Line, err)
 			}
@@ -260,10 +277,11 @@ func (interp *Interpreter) execStatement(node parser.Node, env *Environment) err
 
 	case *parser.FunctionDeclaration:
 		fn := &Function{
-			Name:    n.Name,
-			Params:  n.Params,
-			Body:    n.Body,
-			Closure: env,
+			Name:       n.Name,
+			Params:     n.Params,
+			ReturnType: n.ReturnType,
+			Body:       n.Body,
+			Closure:    env,
 		}
 		env.Set(n.Name, fn, false)
 		return nil
@@ -495,10 +513,11 @@ func (interp *Interpreter) evalExpr(node parser.Node, env *Environment) (interfa
 
 	case *parser.AnonFunction:
 		return &Function{
-			Name:    "<anon>",
-			Params:  n.Params,
-			Body:    n.Body,
-			Closure: env,
+			Name:       "<anon>",
+			Params:     n.Params,
+			ReturnType: n.ReturnType,
+			Body:       n.Body,
+			Closure:    env,
 		}, nil
 
 	default:
@@ -598,7 +617,11 @@ func (interp *Interpreter) evalCall(n *parser.CallExpr, env *Environment) (resul
 		}
 		fnEnv := NewEnvironment(fn.Closure)
 		for i, param := range fn.Params {
-			fnEnv.Set(param, args[i], false)
+			if param.TypeName != "" {
+				checkType(args[i], param.TypeName, param.Name, n.Line)
+			}
+			fnEnv.Set(param.Name, args[i], false)
+			fnEnv.SetType(param.Name, param.TypeName)
 		}
 
 		// Catch return signal
@@ -606,6 +629,9 @@ func (interp *Interpreter) evalCall(n *parser.CallExpr, env *Environment) (resul
 			if r := recover(); r != nil {
 				if rs, ok := r.(returnSignal); ok {
 					result = rs.Value
+					if fn.ReturnType != "" {
+						checkType(result, fn.ReturnType, fn.Name+" return", n.Line)
+					}
 					retErr = nil
 				} else {
 					panic(r)
@@ -700,6 +726,35 @@ func addValues(a, b interface{}) interface{} {
 		return stringify(a) + stringify(b)
 	}
 	return toNumber(a) + toNumber(b)
+}
+
+func typeNameOf(val interface{}) string {
+	switch val.(type) {
+	case float64:
+		return "number"
+	case string:
+		return "string"
+	case bool:
+		return "bool"
+	case []interface{}:
+		return "array"
+	case *Function, *BuiltinFunc:
+		return "function"
+	case nil:
+		return "null"
+	default:
+		return fmt.Sprintf("%T", val)
+	}
+}
+
+func checkType(val interface{}, expected string, name string, line int) {
+	actual := typeNameOf(val)
+	if actual != expected {
+		panic(throwSignal{Value: &Exception{
+			Type:    ExApaNi,
+			Message: fmt.Sprintf("line %d: '%s' expected type %s, got %s", line, name, expected, actual),
+		}})
+	}
 }
 
 func stringify(val interface{}) string {

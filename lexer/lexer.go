@@ -308,6 +308,8 @@ func (l *Lexer) readPunctuation() (Token, bool) {
 		tokType = TOKEN_GREATER
 	case '!':
 		tokType = TOKEN_BANG
+	case ':':
+		tokType = TOKEN_COLON
 	default:
 		return Token{}, false
 	}

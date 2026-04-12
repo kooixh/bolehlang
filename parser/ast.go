@@ -19,18 +19,25 @@ type ImportStatement struct {
 
 func (i *ImportStatement) nodeType() string { return "ImportStatement" }
 
+type Param struct {
+	Name     string
+	TypeName string // "" means no type annotation
+}
+
 type VarDeclaration struct {
-	Name  string
-	Value Node
-	Line  int
+	Name     string
+	TypeName string // "" means no type annotation
+	Value    Node
+	Line     int
 }
 
 func (v *VarDeclaration) nodeType() string { return "VarDeclaration" }
 
 type ConstDeclaration struct {
-	Name  string
-	Value Node
-	Line  int
+	Name     string
+	TypeName string // "" means no type annotation
+	Value    Node
+	Line     int
 }
 
 func (c *ConstDeclaration) nodeType() string { return "ConstDeclaration" }
@@ -101,10 +108,11 @@ type ForEachStatement struct {
 func (f *ForEachStatement) nodeType() string { return "ForEachStatement" }
 
 type FunctionDeclaration struct {
-	Name   string
-	Params []string
-	Body   []Node
-	Line   int
+	Name       string
+	Params     []Param
+	ReturnType string // "" means no type annotation
+	Body       []Node
+	Line       int
 }
 
 func (f *FunctionDeclaration) nodeType() string { return "FunctionDeclaration" }
@@ -226,9 +234,10 @@ type Identifier struct {
 func (i *Identifier) nodeType() string { return "Identifier" }
 
 type AnonFunction struct {
-	Params []string
-	Body   []Node
-	Line   int
+	Params     []Param
+	ReturnType string // "" means no type annotation
+	Body       []Node
+	Line       int
 }
 
 func (a *AnonFunction) nodeType() string { return "AnonFunction" }

@@ -40,5 +40,5 @@ Syntax highlighting for the [bolehlang](https://github.com/kooixh/bolehlang) pro
 | Imports | `tapau` |
 | Loop keywords | `sampai`, `dalam`, `gaodim`, `no need` |
 | Logical & comparison | `sama`, `tak sama`, `also`, `if not` |
-| Built-in functions | `panjang`, `jenis`, `masuk`, `potong`, `nombor`, `ayat`, `cincai` |
+| Built-in functions | `len`, `apa_ni`, `masuk`, `potong_stim`, `nombor`, `string`, `cincai` |
 | Comments | `// eh: ...`, `alamak mula ... alamak habis` |

@@ -326,12 +326,12 @@ eh greet("Ali");
 
 | Function | Description | Example |
 |----------|-------------|---------|
-| `panjang(x)` | Get length of string or array | `panjang("hello")` returns `5` |
-| `jenis(x)` | Get the type of a value | `jenis(42)` returns `"nombor"` |
+| `len(x)` | Get length of string or array | `len("hello")` returns `5` |
+| `apa_ni(x)` | Get the type of a value | `apa_ni(42)` returns `"nombor"` |
 | `masuk(arr, val)` | Append value(s) to array | `masuk(arr, "new")` |
-| `potong(arr, start, end)` | Slice an array | `potong(arr, 1, 3)` |
+| `potong_stim(arr, start, end)` | Slice an array | `potong_stim(arr, 1, 3)` |
 | `nombor(x)` | Convert to number | `nombor("42")` returns `42` |
-| `ayat(x)` | Convert to string | `ayat(42)` returns `"42"` |
+| `string(x)` | Convert to string | `string(42)` returns `"42"` |
 | `cincai()` | Random float between 0 and 1 | `cincai()` returns `0.7342...` |
 | `cincai(max)` | Random int from 0 to max (exclusive) | `cincai(10)` returns `0`-`9` |
 | `cincai(min, max)` | Random int from min to max (inclusive) | `cincai(1, 6)` returns `1`-`6` |

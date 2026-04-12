@@ -6,11 +6,11 @@ import (
 )
 
 func registerBuiltins(env *Environment) {
-	env.Set("panjang", &BuiltinFunc{
-		Name: "panjang",
+	env.Set("len", &BuiltinFunc{
+		Name: "len",
 		Fn: func(args []interface{}) (interface{}, error) {
 			if len(args) != 1 {
-				return nil, fmt.Errorf("panjang() expects 1 argument — bagi satu je lah")
+				return nil, fmt.Errorf("len() expects 1 argument — bagi satu je lah")
 			}
 			switch v := args[0].(type) {
 			case string:
@@ -18,13 +18,13 @@ func registerBuiltins(env *Environment) {
 			case []interface{}:
 				return float64(len(v)), nil
 			default:
-				return nil, fmt.Errorf("panjang() tak boleh guna for type %T", args[0])
+				return nil, fmt.Errorf("len() tak boleh guna for type %T", args[0])
 			}
 		},
 	}, false)
 
-	env.Set("jenis", &BuiltinFunc{
-		Name: "jenis",
+	env.Set("apa_ni", &BuiltinFunc{
+		Name: "apa_ni",
 		Fn: func(args []interface{}) (interface{}, error) {
 			if len(args) != 1 {
 				return nil, fmt.Errorf("jenis() expects 1 argument")
@@ -64,15 +64,15 @@ func registerBuiltins(env *Environment) {
 		},
 	}, false)
 
-	env.Set("potong", &BuiltinFunc{
-		Name: "potong",
+	env.Set("potong_stim", &BuiltinFunc{
+		Name: "potong_stim",
 		Fn: func(args []interface{}) (interface{}, error) {
 			if len(args) < 2 || len(args) > 3 {
-				return nil, fmt.Errorf("potong(senarai, mula, habis) — 2 or 3 args")
+				return nil, fmt.Errorf("potong_stim(senarai, mula, habis) — 2 or 3 args")
 			}
 			arr, ok := args[0].([]interface{})
 			if !ok {
-				return nil, fmt.Errorf("potong() first arg must be senarai")
+				return nil, fmt.Errorf("potong_stim() first arg must be senarai")
 			}
 			start := int(toNumber(args[1]))
 			end := len(arr)
@@ -146,11 +146,11 @@ func registerBuiltins(env *Environment) {
 		},
 	}, false)
 
-	env.Set("ayat", &BuiltinFunc{
-		Name: "ayat",
+	env.Set("string", &BuiltinFunc{
+		Name: "string",
 		Fn: func(args []interface{}) (interface{}, error) {
 			if len(args) != 1 {
-				return nil, fmt.Errorf("ayat() expects 1 argument")
+				return nil, fmt.Errorf("string() expects 1 argument")
 			}
 			return stringify(args[0]), nil
 		},

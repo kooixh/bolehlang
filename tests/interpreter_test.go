@@ -623,33 +623,33 @@ func TestWarnStatement(t *testing.T) {
 
 // --- Built-in functions ---
 
-func TestBuiltinPanjang(t *testing.T) {
-	out := captureOutput(t, `eh panjang("hello");`)
+func TestBuiltinLen(t *testing.T) {
+	out := captureOutput(t, `eh len("hello");`)
 	if strings.TrimSpace(out) != "5" {
 		t.Errorf("expected '5', got %q", out)
 	}
 
-	out = captureOutput(t, `eh panjang([1, 2, 3]);`)
+	out = captureOutput(t, `eh len([1, 2, 3]);`)
 	if strings.TrimSpace(out) != "3" {
 		t.Errorf("expected '3', got %q", out)
 	}
 }
 
-func TestBuiltinPanjangWrongArgs(t *testing.T) {
-	runSourceExpectError(t, `panjang();`)
-	runSourceExpectError(t, `panjang(1);`)
+func TestBuiltinLenWrongArgs(t *testing.T) {
+	runSourceExpectError(t, `len();`)
+	runSourceExpectError(t, `len(1);`)
 }
 
-func TestBuiltinJenis(t *testing.T) {
+func TestBuiltinApaNi(t *testing.T) {
 	tests := []struct {
 		source   string
 		expected string
 	}{
-		{`eh jenis(42);`, "nombor"},
-		{`eh jenis("hello");`, "ayat"},
-		{`eh jenis(can);`, "boleh_tak_boleh"},
-		{`eh jenis([1,2]);`, "senarai"},
-		{`eh jenis(kosong);`, "kosong"},
+		{`eh apa_ni(42);`, "nombor"},
+		{`eh apa_ni("hello");`, "ayat"},
+		{`eh apa_ni(can);`, "boleh_tak_boleh"},
+		{`eh apa_ni([1,2]);`, "senarai"},
+		{`eh apa_ni(kosong);`, "kosong"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.expected, func(t *testing.T) {
@@ -661,13 +661,13 @@ func TestBuiltinJenis(t *testing.T) {
 	}
 }
 
-func TestBuiltinJenisFunction(t *testing.T) {
-	out := captureOutput(t, `jom f() {} eh jenis(f);`)
+func TestBuiltinApaNiFunction(t *testing.T) {
+	out := captureOutput(t, `jom f() {} eh apa_ni(f);`)
 	if strings.TrimSpace(out) != "kerja" {
 		t.Errorf("expected 'kerja', got %q", out)
 	}
 
-	out = captureOutput(t, `eh jenis(panjang);`)
+	out = captureOutput(t, `eh apa_ni(len);`)
 	if strings.TrimSpace(out) != "kerja" {
 		t.Errorf("expected 'kerja', got %q", out)
 	}
@@ -695,20 +695,20 @@ func TestBuiltinMasukMultiple(t *testing.T) {
 	}
 }
 
-func TestBuiltinPotong(t *testing.T) {
+func TestBuiltinPotongStim(t *testing.T) {
 	out := captureOutput(t, `
 		dei arr = [10, 20, 30, 40, 50];
-		eh potong(arr, 1, 3);
+		eh potong_stim(arr, 1, 3);
 	`)
 	if strings.TrimSpace(out) != "[20, 30]" {
 		t.Errorf("expected '[20, 30]', got %q", out)
 	}
 }
 
-func TestBuiltinPotongNoEnd(t *testing.T) {
+func TestBuiltinPotongStimNoEnd(t *testing.T) {
 	out := captureOutput(t, `
 		dei arr = [10, 20, 30];
-		eh potong(arr, 1);
+		eh potong_stim(arr, 1);
 	`)
 	if strings.TrimSpace(out) != "[20, 30]" {
 		t.Errorf("expected '[20, 30]', got %q", out)
@@ -739,8 +739,8 @@ func TestBuiltinNomborInvalidString(t *testing.T) {
 	runSourceExpectError(t, `nombor("abc");`)
 }
 
-func TestBuiltinAyat(t *testing.T) {
-	out := captureOutput(t, `eh ayat(42);`)
+func TestBuiltinString(t *testing.T) {
+	out := captureOutput(t, `eh string(42);`)
 	if strings.TrimSpace(out) != "42" {
 		t.Errorf("expected '42', got %q", out)
 	}
@@ -939,5 +939,126 @@ func TestArrayOfFunctions(t *testing.T) {
 	lines := strings.Split(strings.TrimSpace(out), "\n")
 	if len(lines) != 2 || lines[0] != "a" || lines[1] != "b" {
 		t.Errorf("expected 'a\\nb', got %q", out)
+	}
+}
+
+// --- Type checking ---
+
+func TestTypedVarNumber(t *testing.T) {
+	out := captureOutput(t, `dei x: number = 42; eh x;`)
+	if strings.TrimSpace(out) != "42" {
+		t.Errorf("expected '42', got %q", out)
+	}
+}
+
+func TestTypedVarString(t *testing.T) {
+	out := captureOutput(t, `dei s: string = "hello"; eh s;`)
+	if strings.TrimSpace(out) != "hello" {
+		t.Errorf("expected 'hello', got %q", out)
+	}
+}
+
+func TestTypedVarBool(t *testing.T) {
+	out := captureOutput(t, `dei b: bool = can; eh b;`)
+	if strings.TrimSpace(out) != "can" {
+		t.Errorf("expected 'can', got %q", out)
+	}
+}
+
+func TestTypedVarArray(t *testing.T) {
+	out := captureOutput(t, `dei arr: array = [1, 2, 3]; eh arr;`)
+	if strings.TrimSpace(out) != "[1, 2, 3]" {
+		t.Errorf("expected '[1, 2, 3]', got %q", out)
+	}
+}
+
+func TestTypedVarFunction(t *testing.T) {
+	out := captureOutput(t, `
+		dei f: function = jom (x) { nah x; };
+		eh f(5);
+	`)
+	if strings.TrimSpace(out) != "5" {
+		t.Errorf("expected '5', got %q", out)
+	}
+}
+
+func TestTypedVarWrongTypeFails(t *testing.T) {
+	err := runSourceExpectError(t, `dei x: number = "hello";`)
+	if !strings.Contains(err.Error(), "expected type number") {
+		t.Errorf("expected type error, got: %s", err)
+	}
+}
+
+func TestTypedConstWrongTypeFails(t *testing.T) {
+	runSourceExpectError(t, `memang dei x: string = 42;`)
+}
+
+func TestTypedAssignmentChecked(t *testing.T) {
+	out := captureOutput(t, `
+		dei x: number = 1;
+		tukar x = 2;
+		eh x;
+	`)
+	if strings.TrimSpace(out) != "2" {
+		t.Errorf("expected '2', got %q", out)
+	}
+}
+
+func TestTypedAssignmentWrongTypeFails(t *testing.T) {
+	runSourceExpectError(t, `
+		dei x: number = 1;
+		tukar x = "hello";
+	`)
+}
+
+func TestTypedPlusAssignChecked(t *testing.T) {
+	out := captureOutput(t, `
+		dei x: number = 10;
+		tukar x += 5;
+		eh x;
+	`)
+	if strings.TrimSpace(out) != "15" {
+		t.Errorf("expected '15', got %q", out)
+	}
+}
+
+func TestTypedFunctionParams(t *testing.T) {
+	out := captureOutput(t, `
+		jom add(a: number, b: number): number {
+			nah a + b;
+		}
+		eh add(3, 4);
+	`)
+	if strings.TrimSpace(out) != "7" {
+		t.Errorf("expected '7', got %q", out)
+	}
+}
+
+func TestTypedFunctionParamWrongTypeFails(t *testing.T) {
+	runSourceExpectError(t, `
+		jom add(a: number, b: number) {
+			nah a + b;
+		}
+		add("hello", 1);
+	`)
+}
+
+func TestTypedFunctionReturnWrongTypeFails(t *testing.T) {
+	runSourceExpectError(t, `
+		jom getName(): number {
+			nah "hello";
+		}
+		getName();
+	`)
+}
+
+func TestUntypedVarAcceptsAnything(t *testing.T) {
+	out := captureOutput(t, `
+		dei x = 1;
+		tukar x = "hello";
+		eh x;
+	`)
+	if strings.TrimSpace(out) != "hello" {
+		t.Errorf("expected 'hello', got %q", out)
 	}
 }

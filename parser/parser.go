@@ -97,6 +97,8 @@ func (p *Parser) parseVarDeclaration() (Node, error) {
 	name := p.current().Value
 	p.advance()
 
+	typeName := p.parseOptionalType()
+
 	if err := p.expect(lexer.TOKEN_ASSIGN, "="); err != nil {
 		return nil, err
 	}
@@ -107,7 +109,7 @@ func (p *Parser) parseVarDeclaration() (Node, error) {
 	}
 
 	p.skipSemicolon()
-	return &VarDeclaration{Name: name, Value: value, Line: line}, nil
+	return &VarDeclaration{Name: name, TypeName: typeName, Value: value, Line: line}, nil
 }
 
 func (p *Parser) parseConstDeclaration() (Node, error) {
@@ -120,6 +122,8 @@ func (p *Parser) parseConstDeclaration() (Node, error) {
 	name := p.current().Value
 	p.advance()
 
+	typeName := p.parseOptionalType()
+
 	if err := p.expect(lexer.TOKEN_ASSIGN, "="); err != nil {
 		return nil, err
 	}
@@ -130,7 +134,7 @@ func (p *Parser) parseConstDeclaration() (Node, error) {
 	}
 
 	p.skipSemicolon()
-	return &ConstDeclaration{Name: name, Value: value, Line: line}, nil
+	return &ConstDeclaration{Name: name, TypeName: typeName, Value: value, Line: line}, nil
 }
 
 func (p *Parser) parseReassignment() (Node, error) {
@@ -347,12 +351,14 @@ func (p *Parser) parseFunctionDeclaration() (Node, error) {
 		return nil, err
 	}
 
+	returnType := p.parseOptionalType()
+
 	body, err := p.parseBlock()
 	if err != nil {
 		return nil, err
 	}
 
-	return &FunctionDeclaration{Name: name, Params: params, Body: body, Line: line}, nil
+	return &FunctionDeclaration{Name: name, Params: params, ReturnType: returnType, Body: body, Line: line}, nil
 }
 
 func (p *Parser) parseAnonFunction(line int) (Node, error) {
@@ -369,16 +375,18 @@ func (p *Parser) parseAnonFunction(line int) (Node, error) {
 		return nil, err
 	}
 
+	returnType := p.parseOptionalType()
+
 	body, err := p.parseBlock()
 	if err != nil {
 		return nil, err
 	}
 
-	return &AnonFunction{Params: params, Body: body, Line: line}, nil
+	return &AnonFunction{Params: params, ReturnType: returnType, Body: body, Line: line}, nil
 }
 
-func (p *Parser) parseParamList() ([]string, error) {
-	var params []string
+func (p *Parser) parseParamList() ([]Param, error) {
+	var params []Param
 	if p.check(lexer.TOKEN_RPAREN) {
 		return params, nil
 	}
@@ -386,16 +394,20 @@ func (p *Parser) parseParamList() ([]string, error) {
 	if !p.check(lexer.TOKEN_IDENTIFIER) {
 		return nil, p.error("expected parameter name")
 	}
-	params = append(params, p.current().Value)
+	name := p.current().Value
 	p.advance()
+	typeName := p.parseOptionalType()
+	params = append(params, Param{Name: name, TypeName: typeName})
 
 	for p.check(lexer.TOKEN_COMMA) {
 		p.advance()
 		if !p.check(lexer.TOKEN_IDENTIFIER) {
 			return nil, p.error("expected parameter name after ','")
 		}
-		params = append(params, p.current().Value)
+		name = p.current().Value
 		p.advance()
+		typeName = p.parseOptionalType()
+		params = append(params, Param{Name: name, TypeName: typeName})
 	}
 
 	return params, nil
@@ -829,6 +841,30 @@ func (p *Parser) skipSemicolon() {
 	if p.check(lexer.TOKEN_SEMICOLON) {
 		p.advance()
 	}
+}
+
+var validTypes = map[string]bool{
+	"number":   true,
+	"string":   true,
+	"bool":     true,
+	"array":    true,
+	"function": true,
+}
+
+func (p *Parser) parseOptionalType() string {
+	if !p.check(lexer.TOKEN_COLON) {
+		return ""
+	}
+	p.advance() // skip ':'
+	if !p.check(lexer.TOKEN_IDENTIFIER) {
+		return ""
+	}
+	name := p.current().Value
+	if !validTypes[name] {
+		return ""
+	}
+	p.advance()
+	return name
 }
 
 func (p *Parser) error(msg string) error {

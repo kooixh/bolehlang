@@ -95,6 +95,7 @@ func TestTokenizeKeywords(t *testing.T) {
 		{"can", lexer.TOKEN_CAN},
 		{"cannot", lexer.TOKEN_CANNOT},
 		{"kosong", lexer.TOKEN_KOSONG},
+		{"lai", lexer.TOKEN_LAI},
 	}
 
 	for _, tt := range tests {

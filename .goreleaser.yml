@@ -1,0 +1,78 @@
+version: 2
+
+project_name: bolehlang
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - id: boleh
+    binary: boleh
+    main: .
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+
+archives:
+  - id: default
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_
+      {{- if eq .Os "darwin" }}macos
+      {{- else }}{{ .Os }}{{ end }}_
+      {{- if eq .Arch "amd64" }}x86_64
+      {{- else if eq .Arch "arm64" }}arm64
+      {{- else }}{{ .Arch }}{{ end }}
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    files:
+      - README.md
+      - LICENSE
+      - docs/**/*
+      - examples/**/*
+
+checksum:
+  name_template: checksums.txt
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - Merge pull request
+      - Merge branch
+
+release:
+  draft: false
+  prerelease: auto
+  name_template: "v{{ .Version }}"
+
+brews:
+  - name: boleh
+    repository:
+      owner: kooixh
+      name: homebrew-tap
+    directory: Formula
+    homepage: https://github.com/kooixh/bolehlang
+    description: A Manglish-inspired dynamically typed interpreted language.
+    license: MIT
+    test: |
+      system "#{bin}/boleh", "--version"
+    install: |
+      bin.install "boleh"

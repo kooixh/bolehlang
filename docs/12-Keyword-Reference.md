@@ -11,6 +11,7 @@ A complete mapping of bolehlang keywords to their conventional equivalents.
 | `tukar` | reassign | Reassign a variable ("change") |
 | `eh` | `print` | Print to stdout |
 | `walao eh` | `warn` | Print to stderr ("oh my god") |
+| `lai` | `readline` | Read a line from stdin as a string ("come") |
 | `is it` | `if` | Conditional check |
 | `or is it` | `else if` | Alternate condition |
 | `abuden` | `else` | Default branch ("obviously lah") |

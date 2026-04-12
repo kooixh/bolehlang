@@ -1,7 +1,9 @@
 package interpreter
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -9,6 +11,13 @@ import (
 	"github.com/kooixh/bolehlang/lexer"
 	"github.com/kooixh/bolehlang/parser"
 )
+
+var stdinReader = bufio.NewReader(os.Stdin)
+
+// SetStdin replaces the reader used by the `lai` keyword. Intended for tests.
+func SetStdin(r io.Reader) {
+	stdinReader = bufio.NewReader(r)
+}
 
 type Interpreter struct {
 	global   *Environment
@@ -401,6 +410,16 @@ func (interp *Interpreter) evalExpr(node parser.Node, env *Environment) (interfa
 			}})
 		}
 		return val, nil
+
+	case *parser.ReadStdinExpr:
+		line, err := stdinReader.ReadString('\n')
+		if err != nil && err != io.EOF {
+			panic(throwSignal{Value: &Exception{
+				Type:    ExKantoi,
+				Message: fmt.Sprintf("lai tak boleh baca stdin: %s", err),
+			}})
+		}
+		return strings.TrimRight(line, "\r\n"), nil
 
 	case *parser.ArrayLiteral:
 		var elements []interface{}

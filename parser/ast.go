@@ -233,6 +233,12 @@ type Identifier struct {
 
 func (i *Identifier) nodeType() string { return "Identifier" }
 
+type ReadStdinExpr struct {
+	Line int
+}
+
+func (r *ReadStdinExpr) nodeType() string { return "ReadStdinExpr" }
+
 type AnonFunction struct {
 	Params     []Param
 	ReturnType string // "" means no type annotation

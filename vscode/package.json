@@ -3,13 +3,18 @@
   "displayName": "bolehlang",
   "description": "Syntax highlighting for the bolehlang programming language",
   "version": "0.1.0",
-  "publisher": "kooixh",
+  "license": "MIT",
+  "publisher": "bolehlang",
   "engines": {
     "vscode": "^1.75.0"
   },
   "categories": [
     "Programming Languages"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kooixh/bolehlang.git"
+  },
   "contributes": {
     "languages": [
       {

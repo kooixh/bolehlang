@@ -64,15 +64,15 @@ func registerBuiltins(env *Environment) {
 		},
 	}, false)
 
-	env.Set("potong", &BuiltinFunc{
-		Name: "potong",
+	env.Set("potong_stim", &BuiltinFunc{
+		Name: "potong_stim",
 		Fn: func(args []interface{}) (interface{}, error) {
 			if len(args) < 2 || len(args) > 3 {
-				return nil, fmt.Errorf("potong(senarai, mula, habis) — 2 or 3 args")
+				return nil, fmt.Errorf("potong_stim(senarai, mula, habis) — 2 or 3 args")
 			}
 			arr, ok := args[0].([]interface{})
 			if !ok {
-				return nil, fmt.Errorf("potong() first arg must be senarai")
+				return nil, fmt.Errorf("potong_stim() first arg must be senarai")
 			}
 			start := int(toNumber(args[1]))
 			end := len(arr)

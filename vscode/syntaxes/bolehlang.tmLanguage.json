@@ -190,7 +190,7 @@
       "patterns": [
         {
           "name": "support.function.builtin.boleh",
-          "match": "\\b(len|apa_ni|masuk|potong|nombor|string|cincai)\\b"
+          "match": "\\b(len|apa_ni|masuk|potong_stim|nombor|string|cincai)\\b"
         },
         {
           "match": "\\b([a-zA-Z_][a-zA-Z0-9_]*)\\s*\\(",

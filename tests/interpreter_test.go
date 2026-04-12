@@ -695,20 +695,20 @@ func TestBuiltinMasukMultiple(t *testing.T) {
 	}
 }
 
-func TestBuiltinPotong(t *testing.T) {
+func TestBuiltinPotongStim(t *testing.T) {
 	out := captureOutput(t, `
 		dei arr = [10, 20, 30, 40, 50];
-		eh potong(arr, 1, 3);
+		eh potong_stim(arr, 1, 3);
 	`)
 	if strings.TrimSpace(out) != "[20, 30]" {
 		t.Errorf("expected '[20, 30]', got %q", out)
 	}
 }
 
-func TestBuiltinPotongNoEnd(t *testing.T) {
+func TestBuiltinPotongStimNoEnd(t *testing.T) {
 	out := captureOutput(t, `
 		dei arr = [10, 20, 30];
-		eh potong(arr, 1);
+		eh potong_stim(arr, 1);
 	`)
 	if strings.TrimSpace(out) != "[20, 30]" {
 		t.Errorf("expected '[20, 30]', got %q", out)

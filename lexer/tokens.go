@@ -21,6 +21,9 @@ const (
 	TOKEN_EH
 	TOKEN_WALAO_EH
 
+	// Stdin read
+	TOKEN_LAI
+
 	// Import
 	TOKEN_TAPAU
 
@@ -112,6 +115,7 @@ var keywords = []struct {
 	{"sampai", TOKEN_SAMPAI},
 	{"walao eh", TOKEN_WALAO_EH},
 	{"eh", TOKEN_EH},
+	{"lai", TOKEN_LAI},
 	{"kosong", TOKEN_KOSONG},
 	{"mampus", TOKEN_MAMPUS},
 	{"alamak", TOKEN_ALAMAK},

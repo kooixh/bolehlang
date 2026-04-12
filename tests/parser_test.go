@@ -583,3 +583,29 @@ func TestParseAnonFunctionWithTypes(t *testing.T) {
 		t.Errorf("expected return type 'number', got '%s'", anon.ReturnType)
 	}
 }
+
+func TestParseLaiExpression(t *testing.T) {
+	prog := parse(t, `dei name = lai;`)
+	decl, ok := prog.Body[0].(*parser.VarDeclaration)
+	if !ok {
+		t.Fatalf("expected VarDeclaration, got %T", prog.Body[0])
+	}
+	if _, ok := decl.Value.(*parser.ReadStdinExpr); !ok {
+		t.Fatalf("expected ReadStdinExpr, got %T", decl.Value)
+	}
+}
+
+func TestParseLaiInExpression(t *testing.T) {
+	prog := parse(t, `eh "hi " + lai;`)
+	stmt, ok := prog.Body[0].(*parser.PrintStatement)
+	if !ok {
+		t.Fatalf("expected PrintStatement, got %T", prog.Body[0])
+	}
+	bin, ok := stmt.Value.(*parser.BinaryExpr)
+	if !ok {
+		t.Fatalf("expected BinaryExpr, got %T", stmt.Value)
+	}
+	if _, ok := bin.Right.(*parser.ReadStdinExpr); !ok {
+		t.Fatalf("expected ReadStdinExpr on right, got %T", bin.Right)
+	}
+}

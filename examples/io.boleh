@@ -1,0 +1,5 @@
+eh "what's your name?"
+
+dei name = lai
+
+eh ("hello, " + name)

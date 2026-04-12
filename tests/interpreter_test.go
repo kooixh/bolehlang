@@ -1052,6 +1052,54 @@ func TestTypedFunctionReturnWrongTypeFails(t *testing.T) {
 	`)
 }
 
+// --- lai (stdin read) ---
+
+func captureOutputWithStdin(t *testing.T, source, stdin string) string {
+	t.Helper()
+	interpreter.SetStdin(strings.NewReader(stdin))
+	t.Cleanup(func() { interpreter.SetStdin(os.Stdin) })
+	return captureOutput(t, source)
+}
+
+func TestLaiReadsLine(t *testing.T) {
+	out := captureOutputWithStdin(t, `dei name = lai; eh "hi " + name;`, "Ali\n")
+	if strings.TrimSpace(out) != "hi Ali" {
+		t.Errorf("expected 'hi Ali', got %q", out)
+	}
+}
+
+func TestLaiStripsCRLF(t *testing.T) {
+	out := captureOutputWithStdin(t, `dei s = lai; eh s + "!";`, "hello\r\n")
+	if strings.TrimSpace(out) != "hello!" {
+		t.Errorf("expected 'hello!', got %q", out)
+	}
+}
+
+func TestLaiMultipleReads(t *testing.T) {
+	out := captureOutputWithStdin(t, `
+		dei a = lai;
+		dei b = lai;
+		eh a + " " + b;
+	`, "one\ntwo\n")
+	if strings.TrimSpace(out) != "one two" {
+		t.Errorf("expected 'one two', got %q", out)
+	}
+}
+
+func TestLaiAtEOFReturnsEmpty(t *testing.T) {
+	out := captureOutputWithStdin(t, `dei s = lai; eh "[" + s + "]";`, "")
+	if strings.TrimSpace(out) != "[]" {
+		t.Errorf("expected '[]', got %q", out)
+	}
+}
+
+func TestLaiAsExpression(t *testing.T) {
+	out := captureOutputWithStdin(t, `eh "got: " + lai;`, "world\n")
+	if strings.TrimSpace(out) != "got: world" {
+		t.Errorf("expected 'got: world', got %q", out)
+	}
+}
+
 func TestUntypedVarAcceptsAnything(t *testing.T) {
 	out := captureOutput(t, `
 		dei x = 1;

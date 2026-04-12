@@ -774,6 +774,11 @@ func (p *Parser) parsePrimary() (Node, error) {
 		p.advance()
 		return p.parseAnonFunction(line)
 
+	case lexer.TOKEN_LAI:
+		line := tok.Line
+		p.advance()
+		return &ReadStdinExpr{Line: line}, nil
+
 	default:
 		return nil, p.error(fmt.Sprintf("unexpected token: %s", tok.Value))
 	}

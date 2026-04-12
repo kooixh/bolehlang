@@ -11,6 +11,10 @@ Syntax highlighting for the [bolehlang](https://github.com/kooixh/bolehlang) pro
 
 ## Installation
 
+### Download From VS Code Marketplace (Recommended for general use)
+
+1. Download the bolehlang extension from VS Code Marketplace (https://marketplace.visualstudio.com/items?itemName=bolehlang.bolehlang)
+
 ### From source (recommended for development)
 
 1. Copy or symlink the `vscode` directory into your VS Code extensions folder:

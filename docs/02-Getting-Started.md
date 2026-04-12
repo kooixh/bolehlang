@@ -75,6 +75,24 @@ This outputs:
 [WALAO EH] Something not right lah!
 ```
 
+## Reading from stdin
+
+Use `lai` to read one line from stdin. It evaluates to a string (with the trailing newline stripped):
+
+```
+eh "What's your name?";
+dei name = lai;
+eh "Hello, " + name + "!";
+```
+
+`lai` is an expression, so it can be used anywhere a value is expected:
+
+```
+eh "You typed: " + lai;
+```
+
+At end of input, `lai` returns an empty string.
+
 ## CLI options
 
 ```bash

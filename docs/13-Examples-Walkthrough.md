@@ -44,6 +44,22 @@ Happy Birthday! Now umur: 26
 
 This shows variable declaration (`dei`), constants (`memang dei`), reassignment (`tukar`), and string concatenation with the `+` operator.
 
+## Reading input
+
+**File:** `examples/io.boleh`
+
+```
+eh "what's your name?";
+dei name = lai;
+eh "hello, " + name;
+```
+
+`lai` reads a single line from stdin and evaluates to a string (trailing newline stripped). Run it with piped or interactive input:
+
+```bash
+echo "Ali" | boleh examples/io.boleh
+```
+
 ## FizzBuzz
 
 **File:** `examples/fizzbuzz.boleh`

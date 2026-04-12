@@ -108,6 +108,10 @@
         {
           "name": "keyword.other.print.warn.boleh",
           "match": "\\bwalao\\s+eh\\b"
+        },
+        {
+          "name": "keyword.other.read.boleh",
+          "match": "\\blai\\b"
         }
       ]
     },

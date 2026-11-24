@@ -71,6 +71,8 @@ func TestParseConstDeclaration(t *testing.T) {
 	}
 }
 
+
+
 func TestParseStringLiteral(t *testing.T) {
 	prog := parse(t, `dei s = "hello";`)
 	decl := prog.Body[0].(*parser.VarDeclaration)
@@ -609,3 +611,5 @@ func TestParseLaiInExpression(t *testing.T) {
 		t.Fatalf("expected ReadStdinExpr on right, got %T", bin.Right)
 	}
 }
+
+

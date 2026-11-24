@@ -247,3 +247,13 @@ type AnonFunction struct {
 }
 
 func (a *AnonFunction) nodeType() string { return "AnonFunction" }
+
+// structs declaration init
+
+type StructDeclaration struct {
+	Name string
+	Fields []string
+	Line int
+}
+
+func(k *StructDeclaration) nodeType() string { return "StructDeclaration"}

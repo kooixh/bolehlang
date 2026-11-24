@@ -43,6 +43,9 @@ const (
 	TOKEN_JOM
 	TOKEN_NAH
 
+	// structs
+	TOKEN_KRONI
+
 	// Comparison keywords
 	TOKEN_SAMA
 	TOKEN_TAK_SAMA
@@ -129,4 +132,5 @@ var keywords = []struct {
 	{"if not", TOKEN_IF_NOT},
 	{"also", TOKEN_ALSO},
 	{"dei", TOKEN_DEI},
+	{"kroni" , TOKEN_KRONI},
 }

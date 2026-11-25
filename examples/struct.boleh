@@ -1,0 +1,12 @@
+kroni Orang {
+    nama,
+    umur,
+    pekerjaan
+}
+
+dei ali = Orang("Ali" , 25 , "Software Engineer");
+
+eh "Nama: " + ali.nama;
+eh "Umur: " + ali.umur;
+eh "Pekerjaan: " + ali.pekerjaan;
+

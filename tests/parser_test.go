@@ -613,3 +613,36 @@ func TestParseLaiInExpression(t *testing.T) {
 }
 
 
+func TestParseStructDeclaration(t *testing.T){
+	source := `
+	kroni Orang {
+		nama,
+		umur
+	}
+	`
+
+	prog := parse(t , source)
+	if len(prog.Body) != 1 {
+		t.Fatalf("expected 1 statement, got %d" , len(prog.Body))
+	}
+
+	decl , ok := prog.Body[0].(*parser.StructDeclaration)
+
+	if !ok {
+		t.Fatalf("expected StructDeclaration , got %T", prog.Body[0])
+	}
+
+	if decl.Fields[0] != "nama" || decl.Fields[1] != "umur" {
+		t.Errorf("unexpected fields: %v" , decl.Fields)
+	}
+}
+
+func TestParseStructErrors(t *testing.T){
+	parseFail(t, `kroni { nama }`)
+	// Missing body
+	parseFail(t, `kroni Orang`)
+	// Invalid field name
+	parseFail(t, `kroni Orang { 123 }`)
+}
+
+

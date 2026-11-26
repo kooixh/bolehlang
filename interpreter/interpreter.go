@@ -137,6 +137,47 @@ func (interp *Interpreter) execStatement(node parser.Node, env *Environment) err
 		env.SetType(n.Name, n.TypeName)
 		return nil
 
+	case *parser.MemberAssignment:
+		obj , err := interp.evalExpr(n.Object, env)
+		if err != nil {
+			return fmt.Errorf("line %d: %w", n.Line, err)
+		}
+
+		instance , ok := obj.(*StructInstance)
+
+		if !ok {
+			panic(throwSignal{Value: &Exception{
+				Type: ExApaNi,
+				Message: fmt.Sprintf("cannot assign property '%s' on %T — bukan kroni lah!", n.Property, obj),
+			}})
+		}
+
+		if _, exists := instance.Fields[n.Property]; !exists {
+			panic(throwSignal{Value: &Exception{
+				Type: ExApaNi,
+				Message: fmt.Sprintf("kroni '%s' tak ada property '%s' lah", instance.Def.Name, n.Property),
+			}})
+		}
+
+		val , err := interp.evalExpr(n.Value , env)
+
+		if err != nil {
+			return fmt.Errorf("line %d: %w", n.Line, err)
+		}
+
+		switch n.Operator{
+		case "=" :
+			instance.Fields[n.Property] = val
+
+		case "+=":
+			instance.Fields[n.Property] = addValues(instance.Fields[n.Property] , val)
+
+		case "-=":
+			instance.Fields[n.Property] = toNumber(instance.Fields[n.Property]) - toNumber(val)
+		}
+		
+		return nil 
+
 	case *parser.Assignment:
 		val, err := interp.evalExpr(n.Value, env)
 		if err != nil {

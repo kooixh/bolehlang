@@ -189,6 +189,48 @@ func (p *Parser) parseReassignment() (Node, error) {
 	name := p.current().Value
 	p.advance()
 
+	if p.check(lexer.TOKEN_DOT){
+		p.advance()
+		if !p.check(lexer.TOKEN_IDENTIFIER){
+			return nil , p.error("expected property name after '.'")
+		}
+
+		prop := p.current().Value
+		p.advance()
+
+		op :="="
+		if p.check(lexer.TOKEN_ASSIGN){
+			p.advance()
+		} else if p.check(lexer.TOKEN_PLUS_ASSIGN){
+			op = "+="
+			p.advance()
+		} else if p.check(lexer.TOKEN_MINUS_ASSIGN){
+			op = "-="
+			p.advance()
+		} else {
+			return nil , p.error("Expected '=' , '+=' and '-=' after property name")
+		}
+
+		value , err := p.parseExpression()
+		if err != nil {
+			return nil , err
+		}
+
+		p.skipSemicolon()
+
+		return &MemberAssignment{
+			Object: &Identifier{
+				Name : name,
+				Line: line,
+			},
+			Property: prop,
+			Operator: op,
+			Value: value,
+			Line : line,
+		}, nil
+	}
+	
+
 	op := "="
 	if p.check(lexer.TOKEN_ASSIGN) {
 		p.advance()
@@ -210,6 +252,8 @@ func (p *Parser) parseReassignment() (Node, error) {
 	p.skipSemicolon()
 	return &Assignment{Name: name, Value: value, Operator: op, Line: line}, nil
 }
+
+
 
 func (p *Parser) parsePrint() (Node, error) {
 	line := p.current().Line

@@ -47,3 +47,17 @@ const (
 	ExApaNi       = "ApaNiException"       // Invalid types
 	ExKantoi      = "KantoiException"      // General runtime error
 )
+
+
+// structdef represents the blueprint/constructor of a kroni
+type StructDef struct {
+	Name string
+	Fields []string
+}
+
+
+// represents an instantiated kroni
+type StructInstance struct {
+	Def *StructDef
+	Fields map[string]interface{}
+}

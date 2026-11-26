@@ -42,6 +42,8 @@ func (p *Parser) parseStatement() (Node, error) {
 		return p.parseVarDeclaration()
 	case lexer.TOKEN_MEMANG_DEI:
 		return p.parseConstDeclaration()
+	case lexer.TOKEN_KRONI:
+		return p.parseStructDeclaration()
 	case lexer.TOKEN_TUKAR:
 		return p.parseReassignment()
 	case lexer.TOKEN_EH:
@@ -137,6 +139,46 @@ func (p *Parser) parseConstDeclaration() (Node, error) {
 	return &ConstDeclaration{Name: name, TypeName: typeName, Value: value, Line: line}, nil
 }
 
+func (p *Parser) parseStructDeclaration()(Node , error){
+	line := p.current().Line
+	p.advance()
+
+	if(!p.check(lexer.TOKEN_IDENTIFIER)){
+		return nil , p.error("expected kroni member after 'kroni'")
+	}
+
+	name:=p.current().Value
+	p.advance()
+
+	if err := p.expect(lexer.TOKEN_LBRACE , "{"); err != nil {
+		return nil , err
+	}
+
+	var fields[] string
+
+	for !p.check(lexer.TOKEN_RBRACE) && !p.check(lexer.TOKEN_EOF){
+		if !p.check(lexer.TOKEN_IDENTIFIER){
+			return nil , p.error("expected field name inside kroni")
+		}
+
+		fields = append(fields, p.current().Value)
+		p.advance()
+
+		if p.check(lexer.TOKEN_COMMA){
+			p.advance()
+		} else if p.check(lexer.TOKEN_SEMICOLON){
+			p.advance()
+		}
+	}
+
+	if err := p.expect(lexer.TOKEN_RBRACE , "}"); err != nil {
+		return nil , err
+	}
+
+	p.skipSemicolon()
+	return &StructDeclaration{Name: name , Fields: fields , Line: line} , nil
+}
+
 func (p *Parser) parseReassignment() (Node, error) {
 	line := p.current().Line
 	p.advance() // skip "tukar"
@@ -146,6 +188,48 @@ func (p *Parser) parseReassignment() (Node, error) {
 	}
 	name := p.current().Value
 	p.advance()
+
+	if p.check(lexer.TOKEN_DOT){
+		p.advance()
+		if !p.check(lexer.TOKEN_IDENTIFIER){
+			return nil , p.error("expected property name after '.'")
+		}
+
+		prop := p.current().Value
+		p.advance()
+
+		op :="="
+		if p.check(lexer.TOKEN_ASSIGN){
+			p.advance()
+		} else if p.check(lexer.TOKEN_PLUS_ASSIGN){
+			op = "+="
+			p.advance()
+		} else if p.check(lexer.TOKEN_MINUS_ASSIGN){
+			op = "-="
+			p.advance()
+		} else {
+			return nil , p.error("Expected '=' , '+=' and '-=' after property name")
+		}
+
+		value , err := p.parseExpression()
+		if err != nil {
+			return nil , err
+		}
+
+		p.skipSemicolon()
+
+		return &MemberAssignment{
+			Object: &Identifier{
+				Name : name,
+				Line: line,
+			},
+			Property: prop,
+			Operator: op,
+			Value: value,
+			Line : line,
+		}, nil
+	}
+	
 
 	op := "="
 	if p.check(lexer.TOKEN_ASSIGN) {
@@ -168,6 +252,8 @@ func (p *Parser) parseReassignment() (Node, error) {
 	p.skipSemicolon()
 	return &Assignment{Name: name, Value: value, Operator: op, Line: line}, nil
 }
+
+
 
 func (p *Parser) parsePrint() (Node, error) {
 	line := p.current().Line

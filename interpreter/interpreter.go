@@ -137,6 +137,47 @@ func (interp *Interpreter) execStatement(node parser.Node, env *Environment) err
 		env.SetType(n.Name, n.TypeName)
 		return nil
 
+	case *parser.MemberAssignment:
+		obj , err := interp.evalExpr(n.Object, env)
+		if err != nil {
+			return fmt.Errorf("line %d: %w", n.Line, err)
+		}
+
+		instance , ok := obj.(*StructInstance)
+
+		if !ok {
+			panic(throwSignal{Value: &Exception{
+				Type: ExApaNi,
+				Message: fmt.Sprintf("cannot assign property '%s' on %T — bukan kroni lah!", n.Property, obj),
+			}})
+		}
+
+		if _, exists := instance.Fields[n.Property]; !exists {
+			panic(throwSignal{Value: &Exception{
+				Type: ExApaNi,
+				Message: fmt.Sprintf("kroni '%s' tak ada property '%s' lah", instance.Def.Name, n.Property),
+			}})
+		}
+
+		val , err := interp.evalExpr(n.Value , env)
+
+		if err != nil {
+			return fmt.Errorf("line %d: %w", n.Line, err)
+		}
+
+		switch n.Operator{
+		case "=" :
+			instance.Fields[n.Property] = val
+
+		case "+=":
+			instance.Fields[n.Property] = addValues(instance.Fields[n.Property] , val)
+
+		case "-=":
+			instance.Fields[n.Property] = toNumber(instance.Fields[n.Property]) - toNumber(val)
+		}
+		
+		return nil 
+
 	case *parser.Assignment:
 		val, err := interp.evalExpr(n.Value, env)
 		if err != nil {
@@ -323,6 +364,17 @@ func (interp *Interpreter) execStatement(node parser.Node, env *Environment) err
 		_, err := interp.evalExpr(n.Expression, env)
 		return err
 
+
+	case *parser.StructDeclaration:
+		 def := &StructDef{
+			Name: n.Name,
+			Fields: n.Fields,
+		 }
+
+		 env.Set(n.Name, def, false)
+		 return nil
+
+
 	default:
 		return fmt.Errorf("unknown statement type: %T", node)
 	}
@@ -488,6 +540,8 @@ func (interp *Interpreter) evalExpr(node parser.Node, env *Environment) (interfa
 				}})
 			}
 			return string(o[i]), nil
+
+	
 		default:
 			panic(throwSignal{Value: &Exception{
 				Type:    ExApaNi,
@@ -523,6 +577,18 @@ func (interp *Interpreter) evalExpr(node parser.Node, env *Environment) (interfa
 				Type:    ExApaNi,
 				Message: fmt.Sprintf("ayat tak ada property '%s'", n.Property),
 			}})
+
+		case *StructInstance:
+			val , ok := o.Fields[n.Property]
+			if !ok {
+				panic(throwSignal{Value: &Exception{
+					Type: ExApaNi,
+					Message: fmt.Sprintf("kroni '%s' tak ada property '%s' lah", o.Def.Name, n.Property),
+				}})
+			}
+
+			return val, nil
+			
 		default:
 			panic(throwSignal{Value: &Exception{
 				Type:    ExApaNi,
@@ -538,6 +604,8 @@ func (interp *Interpreter) evalExpr(node parser.Node, env *Environment) (interfa
 			Body:       n.Body,
 			Closure:    env,
 		}, nil
+
+	
 
 	default:
 		return nil, fmt.Errorf("unknown expression type: %T", node)
@@ -666,6 +734,25 @@ func (interp *Interpreter) evalCall(n *parser.CallExpr, env *Environment) (resul
 
 	case *BuiltinFunc:
 		return fn.Fn(args)
+
+
+	case *StructDef:
+		if len(args) != len(fn.Fields){
+			panic(throwSignal{
+				Value: &Exception{
+					Type: ExApaNi,
+					Message: fmt.Sprintf("kroni '%s' expects %d args, got %d — check betul betul lah", fn.Name, len(fn.Fields), len(args)),
+				}})}
+
+		instanceFields := make(map[string]interface{})
+		for i , fieldName := range fn.Fields {
+			instanceFields[fieldName] = args[i]
+		}
+
+		return &StructInstance{
+			Def: fn,
+			Fields: instanceFields,
+		} , nil
 
 	default:
 		panic(throwSignal{Value: &Exception{
